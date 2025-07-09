@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Queue Playground</title>
+        <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+    <div class="stack-container">
+        <h1>Welcome to the Queue Playground</h1>
+
+        <div class="stack-controls">
+            <div class="input-area">
+                <input type="text" id="enqueueInput" placeholder="Enter value to enqueue" />
+            </div>
+            <div class="button-area">
+                <button onclick="enqueue()">Enqueue</button>
+                <button onclick="dequeue()">Dequeue</button>
+                <button onclick="peek()">Peek</button>
+                <button onclick="resetQueue()">Reset</button>
+            </div>
+        </div>
+
+        <div id="queueDisplay" class="empty">Queue is empty.</div>
+    </div>
+
+    <script>
+        let queue = [];
+
+        function updateDisplay(currentQueue) {
+            const display = document.getElementById('queueDisplay');
+            display.innerHTML = '';
+
+            if (currentQueue.length === 0) {
+                display.classList.add('empty');
+                display.textContent = 'Queue is empty.';
+                return;
+            }
+
+            display.classList.remove('empty');
+
+            // Show front at top visually (FIFO), so display normal order top → bottom
+            for (let i = 0; i < currentQueue.length; i++) {
+                const item = document.createElement('div');
+                item.className = 'stack-item';
+                item.textContent = currentQueue[i];
+                display.appendChild(item);
+            }
+        }
+
+        function enqueue() {
+            const input = document.getElementById('enqueueInput');
+            const value = input.value.trim();
+            if (value === '') {
+                alert('Please enter a value to enqueue.');
+                return;
+            }
+            queue.push(value);
+            updateDisplay(queue);
+            input.value = '';
+        }
+
+        function dequeue() {
+            if (queue.length === 0) {
+                alert('Queue is empty.');
+                return;
+            }
+            const dequeued = queue.shift();
+            alert('Dequeued: ' + dequeued);
+            updateDisplay(queue);
+        }
+
+        function peek() {
+            if (queue.length === 0) {
+                alert('Queue is empty.');
+                return;
+            }
+            alert('Front element: ' + queue[0]);
+        }
+
+        function resetQueue() {
+            queue = [];
+            updateDisplay(queue);
+        }
+
+        updateDisplay(queue);
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Segment Tree Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+  <h1>Segment Tree Playground</h1>
+  <p>Efficient range sum queries and point updates.</p>
+
+  <p>Array (initially empty): <span id="arrayDisplay">[]</span></p>
+
+  <input type="number" id="updateIndex" placeholder="Index to update" min="0" />
+  <input type="number" id="updateValue" placeholder="New value" />
+  <button onclick="updateValueAtIndex()">Update Value</button>
+
+  <br/>
+
+  <input type="number" id="queryLeft" placeholder="Query Left Index" min="0" />
+  <input type="number" id="queryRight" placeholder="Query Right Index" min="0" />
+  <button onclick="rangeQuery()">Range Sum Query</button>
+
+  <button onclick="resetSegmentTree()">Reset</button>
+
+  <div id="treeDisplay">Segment tree is empty.</div>
+  <div id="queryResult"></div>
+
+<script>
+  class SegmentTree {
+    constructor(arr = []) {
+      this.n = arr.length;
+      this.tree = new Array(this.n * 4).fill(0);
+      this.arr = arr.slice();
+      if(this.n > 0) this.build(0, 0, this.n -1);
+    }
+
+    build(node, start, end) {
+      if (start === end) {
+        this.tree[node] = this.arr[start];
+      } else {
+        const mid = Math.floor((start + end) / 2);
+        this.build(node*2+1, start, mid);
+        this.build(node*2+2, mid+1, end);
+        this.tree[node] = this.tree[node*2+1] + this.tree[node*2+2];
+      }
+    }
+
+    update(node, start, end, idx, val) {
+      if (start === end) {
+        this.arr[idx] = val;
+        this.tree[node] = val;
+      } else {
+        const mid = Math.floor((start + end) / 2);
+        if (idx <= mid) {
+          this.update(node*2+1, start, mid, idx, val);
+        } else {
+          this.update(node*2+2, mid+1, end, idx, val);
+        }
+        this.tree[node] = this.tree[node*2+1] + this.tree[node*2+2];
+      }
+    }
+
+    query(node, start, end, left, right) {
+      if (right < start || left > end) return 0;
+      if (left <= start && end <= right) return this.tree[node];
+      const mid = Math.floor((start + end) / 2);
+      return this.query(node*2+1, start, mid, left, right) +
+             this.query(node*2+2, mid+1, end, left, right);
+    }
+
+    updateValue(idx, val) {
+      if (idx < 0 || idx >= this.n) return false;
+      this.update(0, 0, this.n - 1, idx, val);
+      return true;
+    }
+
+    rangeSumQuery(left, right) {
+      if (left < 0) left = 0;
+      if (right >= this.n) right = this.n - 1;
+      if (left > right) return 0;
+      return this.query(0, 0, this.n -1, left, right);
+    }
+
+    toString() {
+      return JSON.stringify(this.arr);
+    }
+  }
+
+  let segmentTree = new SegmentTree([]);
+
+  function updateArrayDisplay() {
+    document.getElementById('arrayDisplay').textContent = segmentTree.toString();
+  }
+
+  function updateValueAtIndex() {
+    const idx = Number(document.getElementById('updateIndex').value);
+    const val = Number(document.getElementById('updateValue').value);
+
+    if (isNaN(idx) || isNaN(val)) {
+      alert('Enter valid index and value');
+      return;
+    }
+
+    if (idx < 0) {
+      alert('Index must be >= 0');
+      return;
+    }
+
+    // Extend array size if needed
+    while (idx >= segmentTree.n) {
+      segmentTree.arr.push(0);
+      segmentTree.n++;
+    }
+    segmentTree.build(0, 0, segmentTree.n - 1);
+
+    segmentTree.updateValue(idx, val);
+    updateArrayDisplay();
+    document.getElementById('treeDisplay').textContent = 'Segment Tree array: ' + segmentTree.tree.join(', ');
+    document.getElementById('queryResult').textContent = '';
+  }
+
+  function rangeQuery() {
+    const left = Number(document.getElementById('queryLeft').value);
+    const right = Number(document.getElementById('queryRight').value);
+
+    if (isNaN(left) || isNaN(right)) {
+      alert('Enter valid left and right indices');
+      return;
+    }
+    if (left < 0 || right < 0 || left >= segmentTree.n || right >= segmentTree.n) {
+      alert('Indices out of range');
+      return;
+    }
+    if (left > right) {
+      alert('Left index should be <= right index');
+      return;
+    }
+
+    const result = segmentTree.rangeSumQuery(left, right);
+    document.getElementById('queryResult').textContent = `Sum of range [${left}, ${right}]: ${result}`;
+  }
+
+  function resetSegmentTree() {
+    segmentTree = new SegmentTree([]);
+    updateArrayDisplay();
+    document.getElementById('treeDisplay').textContent = 'Segment tree is empty.';
+    document.getElementById('queryResult').textContent = '';
+    document.getElementById('updateIndex').value = '';
+    document.getElementById('updateValue').value = '';
+    document.getElementById('queryLeft').value = '';
+    document.getElementById('queryRight').value = '';
+  }
+
+  resetSegmentTree();
+</script>
+</body>
+</html>
+

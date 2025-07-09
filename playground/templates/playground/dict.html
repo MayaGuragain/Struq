@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dictionary Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+
+  <style>
+    .dict-display {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      border-radius: 15px;
+      color: white;
+      min-height: 60px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+      white-space: pre-wrap;
+    }
+    .dict-entry {
+      background: #6e8efb;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+<body>
+  <div class="stack-container">
+    <h1>Dictionary Playground</h1>
+    <p style="margin-top: -10px;">Key-value store with add, update, and delete functionality.</p>
+
+    <div class="stack-controls">
+      <div class="input-area">
+        <input type="text" id="keyInput" placeholder="Enter key" />
+        <input type="text" id="valueInput" placeholder="Enter value" />
+      </div>
+      <div class="button-area">
+        <button onclick="addOrUpdate()">Add / Update</button>
+        <button onclick="removeKey()">Remove Key</button>
+        <button onclick="clearDict()">Clear Dictionary</button>
+      </div>
+    </div>
+
+    <div id="dictDisplay" class="dict-display">Dictionary is empty.</div>
+  </div>
+
+  <script>
+    let dict = {};
+
+    function updateDisplay() {
+      const display = document.getElementById('dictDisplay');
+      display.innerHTML = '';
+
+      const entries = Object.entries(dict);
+      if (entries.length === 0) {
+        display.textContent = 'Dictionary is empty.';
+        return;
+      }
+
+      entries.forEach(([key, value]) => {
+        const entry = document.createElement('div');
+        entry.className = 'dict-entry';
+        entry.textContent = `${key} : ${value}`;
+        display.appendChild(entry);
+      });
+    }
+
+    function addOrUpdate() {
+      const key = document.getElementById('keyInput').value.trim();
+      const value = document.getElementById('valueInput').value.trim();
+
+      if (!key || !value) {
+        alert('Both key and value are required.');
+        return;
+      }
+
+      dict[key] = value;
+      updateDisplay();
+
+      document.getElementById('keyInput').value = '';
+      document.getElementById('valueInput').value = '';
+    }
+
+    function removeKey() {
+      const key = document.getElementById('keyInput').value.trim();
+
+      if (!key) {
+        alert('Enter the key to remove.');
+        return;
+      }
+
+      if (dict.hasOwnProperty(key)) {
+        delete dict[key];
+        updateDisplay();
+      } else {
+        alert('Key not found.');
+      }
+
+      document.getElementById('keyInput').value = '';
+    }
+
+    function clearDict() {
+      dict = {};
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

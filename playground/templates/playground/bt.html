@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Binary Tree Playground</title>
+
+    <!-- shared style sheet -->
+    <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+
+    <!-- component‑specific tweaks -->
+    <style>
+        .tree-display {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.25);
+            padding: 15px;
+            min-height: 160px;
+            white-space: pre;
+            color: white;
+            font-family: "Courier New", monospace;
+            overflow-x: auto;
+        }
+        .traversal-output {
+            margin-top: 12px;
+            font-weight: 700;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="stack-container">
+        <h1>Binary Tree Playground</h1>
+
+        <div class="stack-controls">
+            <div class="input-area">
+                <input type="text" id="insertInput" placeholder="Enter value" />
+            </div>
+            <div class="button-area">
+                <button onclick="insertNode()">Insert</button>
+                <button onclick="clearTree()">Clear Tree</button>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 10px;">Traversals:</h3>
+        <div class="button-area" style="margin-bottom: 20px;">
+            <button onclick="showInorder()">Inorder</button>
+            <button onclick="showPreorder()">Preorder</button>
+            <button onclick="showPostorder()">Postorder</button>
+        </div>
+
+        <div id="treeDisplay" class="tree-display">Tree is empty.</div>
+        <div id="traversalOutput" class="traversal-output"></div>
+    </div>
+
+<script>
+/* ---------- Node & BinarySearchTree ---------- */
+class Node {
+    constructor(value) {
+        this.value = parseInt(value);
+        this.left  = null;
+        this.right = null;
+    }
+}
+
+class BinarySearchTree {
+    constructor() { this.root = null; }
+
+    insert(value) {
+        const n = new Node(value);
+        if (!this.root) { this.root = n; return; }
+        this.#insertRec(this.root, n);
+    }
+    #insertRec(cur, n) {
+        if (n.value < cur.value) {
+            if (!cur.left) cur.left = n;
+            else this.#insertRec(cur.left, n);
+        } else {
+            if (!cur.right) cur.right = n;
+            else this.#insertRec(cur.right, n);
+        }
+    }
+
+    inorder(node=this.root, res=[])  { if(node){ this.inorder(node.left,res);  res.push(node.value); this.inorder(node.right,res);} return res; }
+    preorder(node=this.root, res=[]) { if(node){ res.push(node.value);         this.preorder(node.left,res); this.preorder(node.right,res);} return res; }
+    postorder(node=this.root,res=[]) { if(node){ this.postorder(node.left,res);this.postorder(node.right,res);res.push(node.value);} return res; }
+
+    clear() { this.root = null; }
+
+    /* pretty ASCII representation */
+    print(node=this.root, prefix="", isLeft=true) {
+        if(!node) return "";
+        let out = "";
+        if (node.right) out += this.print(node.right, prefix + (isLeft ? "│   " : "    "), false);
+        out += prefix + (isLeft ? "└── " : "┌── ") + node.value + "\n";
+        if (node.left)  out += this.print(node.left,  prefix + (isLeft ? "    " : "│   "), true);
+        return out;
+    }
+}
+
+const tree = new BinarySearchTree();
+
+/* ---------- UI helpers ---------- */
+function insertNode() {
+    const box = document.getElementById("insertInput");
+    const v = box.value.trim();
+    if (!v || isNaN(v)) { alert("Enter a numeric value."); return; }
+    tree.insert(v);
+    box.value = "";
+    updateDisplay();
+}
+
+function clearTree() {
+    tree.clear();
+    updateDisplay();
+    document.getElementById("traversalOutput").textContent = "";
+}
+
+function updateDisplay() {
+    const area = document.getElementById("treeDisplay");
+    area.textContent = tree.root ? tree.print() : "Tree is empty.";
+}
+
+/* traversals */
+function showInorder()  { document.getElementById("traversalOutput").textContent = "Inorder:   " + tree.inorder().join(", "); }
+function showPreorder() { document.getElementById("traversalOutput").textContent = "Preorder:  " + tree.preorder().join(", "); }
+function showPostorder(){ document.getElementById("traversalOutput").textContent = "Postorder: " + tree.postorder().join(", "); }
+
+/* initial UI */
+updateDisplay();
+</script>
+</body>
+</html>

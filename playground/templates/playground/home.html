@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Structures Playground</title>
+
+  <!-- Global stylesheet -->
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+
+  <!-- Font Awesome icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"
+  />
+</head>
+<body>
+  <!-- ——— Hero ——— -->
+  <header>
+  <div class="header-container">
+    <h1>Welcome to the Data Structures Playground</h1>
+    <p class="subtitle">
+      Explore and interact with fundamental data structures like stacks, queues, linked lists, trees, heaps, graphs & more, all in one visual, hands-on platform. Get started by picking a data strcutre to explore!
+    </p>
+  </div>
+</header>
+<div class="scroll-indicator">
+  <i class="fas fa-chevron-down"></i>
+</div>
+
+  <!-- ——— Core Structures Row ——— -->
+  <div class="section-row">
+    <h2 class="section-heading">Core Structures</h2>
+    <div class="tile-strip">
+      <a class="tile" href="{% url 'stack' %}"><i class="fas fa-layer-group"></i>Stack</a>
+      <a class="tile" href="{% url 'queue' %}"><i class="fas fa-stream"></i>Queue</a>
+      <a class="tile" href="{% url 'deque' %}"><i class="fas fa-arrows-alt-h"></i>Deque</a>
+      <a class="tile" href="{% url 'linked_list' %}"><i class="fas fa-link"></i>Linked List</a>
+      <a class="tile" href="{% url 'dlinked_list' %}"><i class="fas fa-link"></i>Doubly Linked List</a>
+      <a class="tile" href="{% url 'set' %}"><i class="fas fa-th-large"></i>Set</a>
+      <a class="tile" href="{% url 'dictionary' %}"><i class="fas fa-book"></i>Dictionary</a>
+      <a class="tile" href="{% url 'tuple' %}"><i class="fas fa-ellipsis-h"></i>Tuple</a>
+    </div>
+  </div>
+
+  <!-- ——— Trees & Heaps Row ——— -->
+  <div class="section-row">
+    <h2 class="section-heading">Trees & Heaps</h2>
+    <div class="tile-strip">
+      <a class="tile" href="{% url 'bt' %}"><i class="fas fa-tree"></i>Binary Tree</a>
+      <a class="tile" href="{% url 'bst' %}"><i class="fas fa-code-branch"></i>BST</a>
+      <a class="tile" href="{% url 'avl' %}"><i class="fas fa-balance-scale"></i>AVL Tree</a>
+      <a class="tile" href="{% url 'red_black' %}"><i class="fas fa-tree"></i>Red‑Black Tree</a>
+      <a class="tile" href="{% url 'minh' %}"><i class="fas fa-arrow-down"></i>Min Heap</a>
+      <a class="tile" href="{% url 'maxh' %}"><i class="fas fa-arrow-up"></i>Max Heap</a>
+      <a class="tile" href="{% url 'segment_tree' %}"><i class="fas fa-layer-group"></i>Segment Tree</a>
+      <a class="tile" href="{% url 'fenwicktree' %}"><i class="fas fa-code"></i>Fenwick Tree</a>
+      <a class="tile" href="{% url 'trie' %}"><i class="fas fa-font"></i>Trie</a>
+    </div>
+  </div>
+
+  <!-- ——— Graphs Row ——— -->
+  <div class="section-row">
+    <h2 class="section-heading">Graphs</h2>
+    <div class="tile-strip">
+      <a class="tile" href="{% url 'graph' %}"><i class="fas fa-network-wired"></i>Graph</a>
+      <a class="tile" href="{% url 'weighted_graph' %}"><i class="fas fa-project-diagram"></i>Weighted Graph</a>
+      <a class="tile" href="{% url 'directed_graph' %}"><i class="fas fa-arrow-right"></i>Directed Graph</a>
+      <a class="tile" href="{% url 'disjointset' %}"><i class="fas fa-sitemap"></i>Disjoint Set</a>
+    </div>
+  </div>
+
+  <!-- ——— Specialized Row ——— -->
+  <div class="section-row">
+    <h2 class="section-heading">Specialized</h2>
+    <div class="tile-strip">
+      <a class="tile" href="{% url 'priority_queue' %}"><i class="fas fa-tasks"></i>Priority Queue</a>
+      <a class="tile" href="{% url 'circular_buffer' %}"><i class="fas fa-sync-alt"></i>Circular Buffer</a>
+      <a class="tile" href="{% url 'skip_list' %}"><i class="fas fa-step-forward"></i>Skip List</a>
+      <a class="tile" href="{% url 'rope' %}"><i class="fas fa-scroll"></i>Rope</a>
+      <a class="tile" href="{% url 'hash_table' %}"><i class="fas fa-table"></i>Hash Table</a>
+      <a class="tile" href="{% url 'bitset' %}"><i class="fas fa-th"></i>Bitset</a>
+    </div>
+  </div>
+
+  <!-- ——— Other Row ——— -->
+  <div class="section-row">
+    <h2 class="section-heading">Other</h2>
+    <div class="tile-strip">
+      <a class="tile" href="{% url 'matrix' %}"><i class="fas fa-th-large"></i>Matrix</a>
+      <a class="tile" href="{% url 'heapq' %}"><i class="fas fa-arrow-up"></i>Python heapq</a>
+    </div>
+  </div>
+
+  <!-- ——— Footer ——— -->
+  <footer>
+    <div class="footer-col">
+      <h3>About</h3>
+      <p>This educational tool is built with Django and JavaScript to make data structures visual and interactive.</p>
+    </div>
+    <div class="footer-col">
+      <h3>Contact</h3>
+      <p>Email: mayaguragain.mg@gmail.com</p>
+      <p>GitHub: https://github.com/MayaGuragain</p>
+    </div>
+    <div class="footer-col">
+      <h3>Credits</h3>
+      <p>Created by Maya G.<br>Powered by Django, HTML/CSS, and JS.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Binary Search Tree Playground</title>
+
+  <!-- global theme -->
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+
+  <!-- component‑specific tweaks -->
+  <style>
+    .tree-display {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 15px;
+      min-height: 160px;
+      white-space: pre;
+      color: white;
+      font-family: "Courier New", monospace;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.25);
+      overflow-x: auto;
+    }
+    .traversal-output {
+      margin-top: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    /* make search / delete boxes sit on same row */
+    .inline-inputs input { width: 160px; }
+  </style>
+</head>
+<body>
+  <div class="stack-container">
+    <h1>Binary Search Tree Playground</h1>
+
+    <div class="stack-controls">
+      <!-- Insert -->
+      <div class="input-area">
+        <input type="text" id="insertInput" placeholder="Enter value to insert" />
+      </div>
+      <div class="button-area">
+        <button onclick="insertNode()">Insert</button>
+        <button onclick="clearTree()">Clear Tree</button>
+      </div>
+    </div>
+
+    <!-- Search / Delete row -->
+    <div class="stack-controls inline-inputs" style="margin-top:-10px;">
+      <div class="input-area">
+        <input type="text" id="searchInput" placeholder="Enter value to search" />
+        <input type="text" id="deleteInput" placeholder="Enter value to delete" />
+      </div>
+      <div class="button-area">
+        <button onclick="searchNode()">Search</button>
+        <button onclick="deleteNode()">Delete</button>
+      </div>
+    </div>
+
+    <!-- Traversal buttons -->
+    <h3 style="margin-bottom: 10px;">Traversals:</h3>
+    <div class="button-area" style="margin-bottom: 20px;">
+      <button onclick="showInorder()">Inorder</button>
+      <button onclick="showPreorder()">Preorder</button>
+      <button onclick="showPostorder()">Postorder</button>
+    </div>
+
+    <div id="treeDisplay" class="tree-display">Tree is empty.</div>
+    <div id="traversalOutput" class="traversal-output"></div>
+  </div>
+
+<script>
+/* ----------  Node & BST class  ---------- */
+class Node {
+  constructor(val) { this.value = val; this.left = null; this.right = null; }
+}
+class BST {
+  constructor() { this.root = null; }
+
+  insert(val) {
+    const n = new Node(val);
+    if (!this.root) { this.root = n; return; }
+    this.#insertRec(this.root, n);
+  }
+  #insertRec(cur, n) {
+    if (n.value < cur.value)  cur.left  ? this.#insertRec(cur.left, n)  : cur.left  = n;
+    else if (n.value > cur.value) cur.right ? this.#insertRec(cur.right, n) : cur.right = n;
+  }
+
+  search(val, cur=this.root) {
+    if (!cur) return false;
+    if (val === cur.value) return true;
+    return val < cur.value ? this.search(val, cur.left) : this.search(val, cur.right);
+  }
+
+  delete(val) { this.root = this.#delRec(this.root, val); }
+  #delRec(node, val) {
+    if (!node) return null;
+    if (val < node.value)      { node.left  = this.#delRec(node.left, val); return node; }
+    if (val > node.value)      { node.right = this.#delRec(node.right,val); return node; }
+
+    /* node.value === val */
+    if (!node.left && !node.right) return null;
+    if (!node.left)  return node.right;
+    if (!node.right) return node.left;
+    /* two children */
+    let minRight = node.right;
+    while (minRight.left) minRight = minRight.left;
+    node.value = minRight.value;
+    node.right = this.#delRec(node.right, minRight.value);
+    return node;
+  }
+
+  inorder (n=this.root,r=[]) { if(n){ this.inorder(n.left,r); r.push(n.value); this.inorder(n.right,r);}  return r; }
+  preorder(n=this.root,r=[]) { if(n){ r.push(n.value); this.preorder(n.left,r); this.preorder(n.right,r);} return r; }
+  postorder(n=this.root,r=[]) {if(n){ this.postorder(n.left,r); this.postorder(n.right,r); r.push(n.value);} return r;}
+
+  clear() { this.root = null; }
+
+  /* ASCII pretty‑print */
+  print(n=this.root, pre="", left=true) {
+    if (!n) return "";
+    let out = "";
+    if (n.right) out += this.print(n.right, pre + (left ? "│   " : "    "), false);
+    out += pre + (left ? "└── " : "┌── ") + n.value + "\n";
+    if (n.left)  out += this.print(n.left,  pre + (left ? "    " : "│   "), true);
+    return out;
+  }
+}
+
+const bst = new BST();
+
+/* ----------  UI helpers  ---------- */
+function updateDisplay() {
+  document.getElementById("treeDisplay").textContent = bst.root ? bst.print() : "Tree is empty.";
+  document.getElementById("traversalOutput").textContent = "";
+}
+
+function getNumericOrString(val) {
+  const num = Number(val);
+  return isNaN(num) ? val : num;
+}
+
+function insertNode() {
+  const box = document.getElementById("insertInput");
+  const v = box.value.trim();
+  if (!v) return alert("Enter a value.");
+  bst.insert(getNumericOrString(v));
+  box.value = "";
+  updateDisplay();
+}
+
+function searchNode() {
+  const box = document.getElementById("searchInput");
+  const v = box.value.trim();
+  if (!v) return alert("Enter value to search.");
+  alert(bst.search(getNumericOrString(v)) ? `Value "${v}" found.` : `Value "${v}" not found.`);
+  box.value = "";
+}
+
+function deleteNode() {
+  const box = document.getElementById("deleteInput");
+  const v = box.value.trim();
+  if (!v) return alert("Enter value to delete.");
+  bst.delete(getNumericOrString(v));
+  box.value = "";
+  updateDisplay();
+}
+
+function clearTree() { bst.clear(); updateDisplay(); }
+
+/* Traversal buttons */
+function showInorder()  { if(!bst.root) return alert("Tree is empty."); document.getElementById("traversalOutput").textContent = "Inorder:   " + bst.inorder().join(", "); }
+function showPreorder() { if(!bst.root) return alert("Tree is empty."); document.getElementById("traversalOutput").textContent = "Preorder:  " + bst.preorder().join(", "); }
+function showPostorder(){ if(!bst.root) return alert("Tree is empty."); document.getElementById("traversalOutput").textContent = "Postorder: " + bst.postorder().join(", "); }
+
+/* initial render */
+updateDisplay();
+</script>
+</body>
+</html>

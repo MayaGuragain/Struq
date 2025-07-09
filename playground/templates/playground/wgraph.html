@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weighted Graph Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+  <div class="wgraph-container">
+    <h1>Weighted Graph Playground</h1>
+    <p>Represent graphs with edge weights. Great for Dijkstra’s algorithm.</p>
+
+    <div class="wgraph-controls">
+      <div class="input-area">
+        <input type="text" id="vertexInput" placeholder="Enter vertex name" />
+        <button onclick="addVertex()">Add Vertex</button>
+      </div>
+
+      <div class="input-area" style="margin-top: 10px;">
+        <input type="text" id="edgeFrom" placeholder="From vertex" />
+        <input type="text" id="edgeTo" placeholder="To vertex" />
+        <input type="number" id="edgeWeight" placeholder="Weight" min="0" step="any" />
+        <button onclick="addEdge()">Add Weighted Edge</button>
+      </div>
+
+      <div class="button-area" style="margin-top: 10px;">
+        <button onclick="resetGraph()">Reset Graph</button>
+      </div>
+    </div>
+
+    <pre id="wgraphDisplay" class="empty">Graph is empty.</pre>
+  </div>
+
+  <script>
+    let graph = {};
+
+    function updateDisplay() {
+      const display = document.getElementById('wgraphDisplay');
+      const entries = Object.entries(graph);
+      if (entries.length === 0) {
+        display.textContent = 'Graph is empty.';
+        display.classList.add('empty');
+        return;
+      }
+      display.classList.remove('empty');
+      let text = '';
+      for (const [vertex, edges] of entries) {
+        // edges is array of objects: {to, weight}
+        const edgesStr = edges.map(e => `${e.to} (w=${e.weight})`).join(', ');
+        text += `${vertex} → [${edgesStr}]\n`;
+      }
+      display.textContent = text;
+    }
+
+    function addVertex() {
+      const v = document.getElementById('vertexInput').value.trim();
+      if (!v) {
+        alert('Please enter a vertex name.');
+        return;
+      }
+      if (v in graph) {
+        alert(`Vertex "${v}" already exists.`);
+      } else {
+        graph[v] = [];
+        updateDisplay();
+      }
+      document.getElementById('vertexInput').value = '';
+    }
+
+    function addEdge() {
+      const from = document.getElementById('edgeFrom').value.trim();
+      const to = document.getElementById('edgeTo').value.trim();
+      const weightInput = document.getElementById('edgeWeight').value.trim();
+      const weight = parseFloat(weightInput);
+
+      if (!from || !to) {
+        alert('Please enter both "From" and "To" vertex names.');
+        return;
+      }
+      if (weightInput === '' || isNaN(weight) || weight < 0) {
+        alert('Please enter a valid non-negative weight.');
+        return;
+      }
+      if (!(from in graph)) {
+        alert(`Vertex "${from}" does not exist.`);
+        return;
+      }
+      if (!(to in graph)) {
+        alert(`Vertex "${to}" does not exist.`);
+        return;
+      }
+      // Prevent duplicate edges with same to and weight
+      if (!graph[from].some(e => e.to === to && e.weight === weight)) {
+        graph[from].push({to, weight});
+        updateDisplay();
+      } else {
+        alert(`Edge from "${from}" to "${to}" with weight ${weight} already exists.`);
+      }
+      document.getElementById('edgeFrom').value = '';
+      document.getElementById('edgeTo').value = '';
+      document.getElementById('edgeWeight').value = '';
+    }
+
+    function resetGraph() {
+      graph = {};
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

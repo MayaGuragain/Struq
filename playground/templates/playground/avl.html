@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AVL Tree Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+  <style>
+    pre#avlDisplay {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 120px;
+      color: white;
+      font-family: monospace;
+      white-space: pre;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+    }
+    button, input {
+      margin: 5px 8px 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="stack-container">
+    <h1>AVL Tree Playground</h1>
+    <p>Self-balancing binary search tree.</p>
+
+    <input type="number" id="avlInput" placeholder="Enter number" />
+    <button onclick="insertAVL()">Insert</button>
+    <button onclick="clearAVL()">Clear Tree</button>
+
+    <pre id="avlDisplay">Tree is empty.</pre>
+  </div>
+
+  <script>
+    class AVLNode {
+      constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+        this.height = 1;
+      }
+    }
+
+    class AVLTree {
+      constructor() {
+        this.root = null;
+      }
+
+      getHeight(node) {
+        return node ? node.height : 0;
+      }
+
+      getBalance(node) {
+        return node ? this.getHeight(node.left) - this.getHeight(node.right) : 0;
+      }
+
+      rightRotate(y) {
+        let x = y.left;
+        let T2 = x.right;
+        x.right = y;
+        y.left = T2;
+
+        y.height = Math.max(this.getHeight(y.left), this.getHeight(y.right)) + 1;
+        x.height = Math.max(this.getHeight(x.left), this.getHeight(x.right)) + 1;
+
+        return x;
+      }
+
+      leftRotate(x) {
+        let y = x.right;
+        let T2 = y.left;
+        y.left = x;
+        x.right = T2;
+
+        x.height = Math.max(this.getHeight(x.left), this.getHeight(x.right)) + 1;
+        y.height = Math.max(this.getHeight(y.left), this.getHeight(y.right)) + 1;
+
+        return y;
+      }
+
+      insert(node, value) {
+        if (!node) return new AVLNode(value);
+        if (value < node.value) {
+          node.left = this.insert(node.left, value);
+        } else if (value > node.value) {
+          node.right = this.insert(node.right, value);
+        } else {
+          return node; // Duplicate values not allowed
+        }
+
+        node.height = 1 + Math.max(this.getHeight(node.left), this.getHeight(node.right));
+        let balance = this.getBalance(node);
+
+        // Left Left
+        if (balance > 1 && value < node.left.value) {
+          return this.rightRotate(node);
+        }
+        // Right Right
+        if (balance < -1 && value > node.right.value) {
+          return this.leftRotate(node);
+        }
+        // Left Right
+        if (balance > 1 && value > node.left.value) {
+          node.left = this.leftRotate(node.left);
+          return this.rightRotate(node);
+        }
+        // Right Left
+        if (balance < -1 && value < node.right.value) {
+          node.right = this.rightRotate(node.right);
+          return this.leftRotate(node);
+        }
+
+        return node;
+      }
+
+      add(value) {
+        this.root = this.insert(this.root, value);
+      }
+
+      clear() {
+        this.root = null;
+      }
+
+      print(node = this.root, prefix = '', isLeft = true) {
+        if (!node) return '';
+        let str = '';
+        if (node.right) {
+          str += this.print(node.right, prefix + (isLeft ? "│   " : "    "), false);
+        }
+        str += prefix + (isLeft ? "└── " : "┌── ") + node.value + "\n";
+        if (node.left) {
+          str += this.print(node.left, prefix + (isLeft ? "    " : "│   "), true);
+        }
+        return str;
+      }
+    }
+
+    const avl = new AVLTree();
+
+    function insertAVL() {
+      const input = document.getElementById('avlInput');
+      const value = parseInt(input.value.trim());
+      if (isNaN(value)) {
+        alert('Please enter a valid number.');
+        return;
+      }
+      avl.add(value);
+      input.value = '';
+      updateDisplay();
+    }
+
+    function clearAVL() {
+      avl.clear();
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const display = document.getElementById('avlDisplay');
+      display.textContent = avl.root ? avl.print() : 'Tree is empty.';
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

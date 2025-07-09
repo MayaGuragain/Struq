@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Min Heap Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; max-width: 700px; }
+    input, button { margin: 6px 10px 6px 0; padding: 6px 12px; }
+    #heapDisplay {
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      min-height: 60px;
+      font-family: monospace;
+      background: #f9f9f9;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Min Heap Playground</h1>
+
+  <input type="number" id="minHeapInput" placeholder="Enter number" />
+  <button onclick="insertMinHeap()">Insert</button>
+  <button onclick="extractMin()">Extract Min</button>
+  <button onclick="peekMin()">Peek Min</button>
+  <button onclick="resetMinHeap()">Reset Heap</button>
+
+  <div id="heapDisplay">Heap is empty.</div>
+
+  <script>
+    class MinHeap {
+      constructor() {
+        this.heap = [];
+      }
+
+      getParentIndex(i) { return Math.floor((i - 1) / 2); }
+      getLeftChildIndex(i) { return 2 * i + 1; }
+      getRightChildIndex(i) { return 2 * i + 2; }
+
+      insert(value) {
+        this.heap.push(value);
+        this.heapifyUp(this.heap.length - 1);
+      }
+
+      heapifyUp(index) {
+        let parentIndex = this.getParentIndex(index);
+        while (index > 0 && this.heap[parentIndex] > this.heap[index]) {
+          [this.heap[parentIndex], this.heap[index]] = [this.heap[index], this.heap[parentIndex]];
+          index = parentIndex;
+          parentIndex = this.getParentIndex(index);
+        }
+      }
+
+      extractMin() {
+        if (this.heap.length === 0) return null;
+        if (this.heap.length === 1) return this.heap.pop();
+
+        const min = this.heap[0];
+        this.heap[0] = this.heap.pop();
+        this.heapifyDown(0);
+        return min;
+      }
+
+      heapifyDown(index) {
+        const length = this.heap.length;
+        let smallest = index;
+        const left = this.getLeftChildIndex(index);
+        const right = this.getRightChildIndex(index);
+
+        if (left < length && this.heap[left] < this.heap[smallest]) smallest = left;
+        if (right < length && this.heap[right] < this.heap[smallest]) smallest = right;
+
+        if (smallest !== index) {
+          [this.heap[index], this.heap[smallest]] = [this.heap[smallest], this.heap[index]];
+          this.heapifyDown(smallest);
+        }
+      }
+
+      peek() {
+        return this.heap.length ? this.heap[0] : null;
+      }
+
+      clear() {
+        this.heap = [];
+      }
+
+      toString() {
+        return this.heap.join(', ');
+      }
+    }
+
+    const minHeap = new MinHeap();
+
+    function updateDisplay() {
+      const display = document.getElementById('heapDisplay');
+      display.textContent = minHeap.heap.length ? minHeap.toString() : 'Heap is empty.';
+    }
+
+    function insertMinHeap() {
+      const input = document.getElementById('minHeapInput');
+      const val = Number(input.value);
+      if (isNaN(val)) {
+        alert('Enter a valid number.');
+        return;
+      }
+      minHeap.insert(val);
+      input.value = '';
+      updateDisplay();
+    }
+
+    function extractMin() {
+      const min = minHeap.extractMin();
+      if (min === null) {
+        alert('Heap is empty.');
+      } else {
+        alert('Extracted min: ' + min);
+      }
+      updateDisplay();
+    }
+
+    function peekMin() {
+      const min = minHeap.peek();
+      if (min === null) alert('Heap is empty.');
+      else alert('Min element: ' + min);
+    }
+
+    function resetMinHeap() {
+      minHeap.clear();
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

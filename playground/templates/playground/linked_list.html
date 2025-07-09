@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Linked List Playground</title>
+
+    <!-- reuse the same glassy style sheet -->
+    <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+
+    <!-- add a small linked‑list tweak -->
+    <style>
+        /* display node blocks in a row with arrows */
+        .list-display {
+            flex-direction: row;
+            overflow-x: auto;
+        }
+        .arrow {
+            font-size: 1.4rem;
+            margin: 0 8px;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="stack-container">
+        <h1>Linked List Playground</h1>
+
+        <div class="stack-controls">
+            <div class="input-area">
+                <input type="text" id="nodeInput" placeholder="Enter value" />
+            </div>
+
+            <div class="button-area">
+                <button onclick="insertNode()">Insert</button>
+                <button onclick="deleteNode()">Delete</button>
+                <button onclick="displayList()">Display</button>
+                <button onclick="resetList()">Reset</button>
+            </div>
+        </div>
+
+        <div id="listDisplay" class="empty list-display">The list is empty.</div>
+    </div>
+
+    <script>
+        /* --- simple singly‑linked‑list using an array for demo --- */
+        let linkedList = [];
+
+        function updateDisplay() {
+            const display = document.getElementById('listDisplay');
+            display.innerHTML = '';
+
+            if (linkedList.length === 0) {
+                display.classList.add('empty');
+                display.textContent = 'The list is empty.';
+                return;
+            }
+
+            display.classList.remove('empty');
+
+            linkedList.forEach((val, idx) => {
+                const node = document.createElement('div');
+                node.className = 'stack-item';
+                node.textContent = val;
+                display.appendChild(node);
+
+                if (idx !== linkedList.length - 1) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'arrow';
+                    arrow.textContent = '→';
+                    display.appendChild(arrow);
+                }
+            });
+        }
+
+        function getInputVal() {
+            const box = document.getElementById('nodeInput');
+            const val = box.value.trim();
+            box.value = '';
+            return val;
+        }
+
+        function insertNode() {
+            const value = getInputVal();
+            if (!value) return alert('Please enter a value.');
+            linkedList.push(value);          // inserts at tail
+            updateDisplay();
+        }
+
+        function deleteNode() {
+            if (!linkedList.length) return alert('The list is empty.');
+            const value = prompt('Enter value to delete:');
+            if (value === null) return;       // user pressed cancel
+            const idx = linkedList.indexOf(value.trim());
+            if (idx === -1) return alert('Value not found.');
+            linkedList.splice(idx, 1);
+            updateDisplay();
+        }
+
+        function displayList() { updateDisplay(); }
+
+        function resetList() {
+            linkedList = [];
+            updateDisplay();
+        }
+
+        /* initial render */
+        updateDisplay();
+    </script>
+</body>
+</html>

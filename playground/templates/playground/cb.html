@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Circular Buffer Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+  <div class="cb-container">
+    <h1>Circular Buffer Playground</h1>
+    <p>Use fixed-size buffer that wraps around on overflow.</p>
+
+    <div class="cb-controls">
+      <div class="input-area">
+        <input type="text" id="cbInput" placeholder="Enter value" />
+        <button onclick="enqueue()">Enqueue</button>
+        <button onclick="dequeue()">Dequeue</button>
+        <button onclick="resetBuffer()">Reset</button>
+      </div>
+    </div>
+
+    <pre id="cbDisplay" class="empty">Buffer is empty.</pre>
+  </div>
+
+  <script>
+    const SIZE = 5; // Buffer size
+    const buffer = new Array(SIZE);
+    let front = 0;
+    let rear = 0;
+    let count = 0;
+
+    function updateDisplay() {
+      const display = document.getElementById('cbDisplay');
+      if (count === 0) {
+        display.textContent = 'Buffer is empty.';
+        display.classList.add('empty');
+        return;
+      }
+
+      display.classList.remove('empty');
+      let output = 'Buffer: [ ';
+      for (let i = 0; i < count; i++) {
+        const idx = (front + i) % SIZE;
+        output += buffer[idx] + ' ';
+      }
+      output += ']';
+      display.textContent = output;
+    }
+
+    function enqueue() {
+      const val = document.getElementById('cbInput').value.trim();
+      if (!val) {
+        alert('Please enter a value.');
+        return;
+      }
+      if (count === SIZE) {
+        alert('Buffer is full.');
+        return;
+      }
+      buffer[rear] = val;
+      rear = (rear + 1) % SIZE;
+      count++;
+      updateDisplay();
+      document.getElementById('cbInput').value = '';
+    }
+
+    function dequeue() {
+      if (count === 0) {
+        alert('Buffer is empty.');
+        return;
+      }
+      const removed = buffer[front];
+      front = (front + 1) % SIZE;
+      count--;
+      alert('Dequeued: ' + removed);
+      updateDisplay();
+    }
+
+    function resetBuffer() {
+      front = 0;
+      rear = 0;
+      count = 0;
+      for (let i = 0; i < SIZE; i++) buffer[i] = undefined;
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

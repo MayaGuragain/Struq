@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Python heapq Module Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+  <style>
+    /* quick inline tweaks; your global CSS still applies */
+    .heapq-grid { margin-top: 8px; }
+    .heapq-item { display:inline-block; padding:4px 8px; margin:2px;
+                  border:1px solid #888; border-radius:4px; }
+  </style>
+</head>
+<body>
+  <div class="heapq-container">
+    <h1>Python <code>heapq</code> Playground</h1>
+    <p>Interactively explore min‑heap operations just like <code>heapq</code> in Python.</p>
+
+    <div class="heapq-controls">
+      <div class="input-area">
+        <input type="number" id="heapVal" placeholder="Value" step="any" />
+        <button onclick="heappush()">heappush</button>
+        <button onclick="heappop()">heappop</button>
+        <button onclick="heappeek()">peek (heap[0])</button>
+        <button onclick="resetHeap()">reset</button>
+      </div>
+    </div>
+
+    <pre id="heapqDisplay" class="empty">Heap is empty.</pre>
+  </div>
+
+  <script>
+    // --- JavaScript min‑heap (binary heap) mirroring Python's heapq ----------
+    const heap = [];
+
+    function siftUp(idx) {
+      while (idx > 0) {
+        const parent = (idx - 1) >> 1;
+        if (heap[idx] >= heap[parent]) break;
+        [heap[idx], heap[parent]] = [heap[parent], heap[idx]];
+        idx = parent;
+      }
+    }
+    function siftDown(idx) {
+      const n = heap.length;
+      while (true) {
+        let left = idx * 2 + 1;
+        let right = left + 1;
+        let smallest = idx;
+        if (left < n && heap[left] < heap[smallest]) smallest = left;
+        if (right < n && heap[right] < heap[smallest]) smallest = right;
+        if (smallest === idx) break;
+        [heap[idx], heap[smallest]] = [heap[smallest], heap[idx]];
+        idx = smallest;
+      }
+    }
+
+    // heapq-style operations
+    function heappush() {
+      const valStr = document.getElementById('heapVal').value.trim();
+      if (valStr === '') { alert('Enter a value to push.'); return; }
+      const val = parseFloat(valStr);
+      if (Number.isNaN(val)) { alert('Invalid number.'); return; }
+      heap.push(val);
+      siftUp(heap.length - 1);
+      updateDisplay();
+      document.getElementById('heapVal').value = '';
+    }
+
+    function heappop() {
+      if (heap.length === 0) { alert('Heap is empty.'); return; }
+      const root = heap[0];
+      const last = heap.pop();
+      if (heap.length) { heap[0] = last; siftDown(0); }
+      alert(`heappop → ${root}`);
+      updateDisplay();
+    }
+
+    function heappeek() {
+      if (heap.length === 0) { alert('Heap is empty.'); return; }
+      alert(`heap[0] (peek) → ${heap[0]}`);
+    }
+
+    function resetHeap() {
+      heap.length = 0;
+      updateDisplay();
+    }
+
+    // --- Display ------------------------------------------------------------
+    function updateDisplay() {
+      const disp = document.getElementById('heapqDisplay');
+      if (heap.length === 0) {
+        disp.textContent = 'Heap is empty.';
+        disp.classList.add('empty');
+        return;
+      }
+      disp.classList.remove('empty');
+
+      // simple linear representation plus levels
+      const lines = [];
+      let level = 0, nextBreak = 1;
+      heap.forEach((v, i) => {
+        if (i === nextBreak) { lines.push('\n'); level++; nextBreak = nextBreak*2 + 1; }
+        lines.push(v);
+      });
+      disp.textContent = lines.join(' ');
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

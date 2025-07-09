@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Max Heap Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+  <h1>Max Heap Playground</h1>
+
+  <input type="number" id="maxHeapInput" placeholder="Enter number" />
+  <button onclick="insertMaxHeap()">Insert</button>
+  <button onclick="extractMax()">Extract Max</button>
+  <button onclick="peekMax()">Peek Max</button>
+  <button onclick="resetMaxHeap()">Reset Heap</button>
+
+  <div id="heapDisplay">Heap is empty.</div>
+
+  <script>
+    class MaxHeap {
+      constructor() {
+        this.heap = [];
+      }
+
+      getParentIndex(i) { return Math.floor((i - 1) / 2); }
+      getLeftChildIndex(i) { return 2 * i + 1; }
+      getRightChildIndex(i) { return 2 * i + 2; }
+
+      insert(value) {
+        this.heap.push(value);
+        this.heapifyUp(this.heap.length - 1);
+      }
+
+      heapifyUp(index) {
+        let parentIndex = this.getParentIndex(index);
+        while (index > 0 && this.heap[parentIndex] < this.heap[index]) {
+          [this.heap[parentIndex], this.heap[index]] = [this.heap[index], this.heap[parentIndex]];
+          index = parentIndex;
+          parentIndex = this.getParentIndex(index);
+        }
+      }
+
+      extractMax() {
+        if (this.heap.length === 0) return null;
+        if (this.heap.length === 1) return this.heap.pop();
+
+        const max = this.heap[0];
+        this.heap[0] = this.heap.pop();
+        this.heapifyDown(0);
+        return max;
+      }
+
+      heapifyDown(index) {
+        const length = this.heap.length;
+        let largest = index;
+        const left = this.getLeftChildIndex(index);
+        const right = this.getRightChildIndex(index);
+
+        if (left < length && this.heap[left] > this.heap[largest]) largest = left;
+        if (right < length && this.heap[right] > this.heap[largest]) largest = right;
+
+        if (largest !== index) {
+          [this.heap[index], this.heap[largest]] = [this.heap[largest], this.heap[index]];
+          this.heapifyDown(largest);
+        }
+      }
+
+      peek() {
+        return this.heap.length ? this.heap[0] : null;
+      }
+
+      clear() {
+        this.heap = [];
+      }
+
+      toString() {
+        return this.heap.join(', ');
+      }
+    }
+
+    const maxHeap = new MaxHeap();
+
+    function updateDisplay() {
+      const display = document.getElementById('heapDisplay');
+      display.textContent = maxHeap.heap.length ? maxHeap.toString() : 'Heap is empty.';
+    }
+
+    function insertMaxHeap() {
+      const input = document.getElementById('maxHeapInput');
+      const val = Number(input.value);
+      if (isNaN(val)) {
+        alert('Enter a valid number.');
+        return;
+      }
+      maxHeap.insert(val);
+      input.value = '';
+      updateDisplay();
+    }
+
+    function extractMax() {
+      const max = maxHeap.extractMax();
+      if (max === null) {
+        alert('Heap is empty.');
+      } else {
+        alert('Extracted max: ' + max);
+      }
+      updateDisplay();
+    }
+
+    function peekMax() {
+      const max = maxHeap.peek();
+      if (max === null) alert('Heap is empty.');
+      else alert('Max element: ' + max);
+    }
+
+    function resetMaxHeap() {
+      maxHeap.clear();
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

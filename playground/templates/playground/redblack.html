@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Red-Black Tree Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+  <style>
+    pre#rbtDisplay {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 120px;
+      color: white;
+      font-family: monospace;
+      white-space: pre;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+    }
+    button, input {
+      margin: 5px 8px 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="stack-container">
+    <h1>Red-Black Tree Playground</h1>
+    <p>Balanced BST with color properties.</p>
+
+    <input type="number" id="rbtInput" placeholder="Enter number" />
+    <button onclick="insertRBT()">Insert</button>
+    <button onclick="clearRBT()">Clear Tree</button>
+
+    <pre id="rbtDisplay">Tree is empty.</pre>
+  </div>
+
+  <script>
+    const RED = 'RED';
+    const BLACK = 'BLACK';
+
+    class Node {
+      constructor(value, color = RED) {
+        this.value = value;
+        this.color = color;
+        this.left = null;
+        this.right = null;
+        this.parent = null;
+      }
+    }
+
+    class RedBlackTree {
+      constructor() {
+        this.root = null;
+      }
+
+      leftRotate(x) {
+        const y = x.right;
+        x.right = y.left;
+        if (y.left) y.left.parent = x;
+        y.parent = x.parent;
+        if (!x.parent) this.root = y;
+        else if (x === x.parent.left) x.parent.left = y;
+        else x.parent.right = y;
+        y.left = x;
+        x.parent = y;
+      }
+
+      rightRotate(y) {
+        const x = y.left;
+        y.left = x.right;
+        if (x.right) x.right.parent = y;
+        x.parent = y.parent;
+        if (!y.parent) this.root = x;
+        else if (y === y.parent.left) y.parent.left = x;
+        else y.parent.right = x;
+        x.right = y;
+        y.parent = x;
+      }
+
+      insert(value) {
+        let node = new Node(value);
+        let y = null;
+        let x = this.root;
+
+        while (x) {
+          y = x;
+          if (node.value < x.value) x = x.left;
+          else if (node.value > x.value) x = x.right;
+          else return; // ignore duplicates
+        }
+
+        node.parent = y;
+        if (!y) this.root = node;
+        else if (node.value < y.value) y.left = node;
+        else y.right = node;
+
+        node.color = RED;
+        this.fixInsert(node);
+      }
+
+      fixInsert(k) {
+        while (k !== this.root && k.parent.color === RED) {
+          if (k.parent === k.parent.parent.left) {
+            let u = k.parent.parent.right;
+            if (u && u.color === RED) {
+              k.parent.color = BLACK;
+              u.color = BLACK;
+              k.parent.parent.color = RED;
+              k = k.parent.parent;
+            } else {
+              if (k === k.parent.right) {
+                k = k.parent;
+                this.leftRotate(k);
+              }
+              k.parent.color = BLACK;
+              k.parent.parent.color = RED;
+              this.rightRotate(k.parent.parent);
+            }
+          } else {
+            let u = k.parent.parent.left;
+            if (u && u.color === RED) {
+              k.parent.color = BLACK;
+              u.color = BLACK;
+              k.parent.parent.color = RED;
+              k = k.parent.parent;
+            } else {
+              if (k === k.parent.left) {
+                k = k.parent;
+                this.rightRotate(k);
+              }
+              k.parent.color = BLACK;
+              k.parent.parent.color = RED;
+              this.leftRotate(k.parent.parent);
+            }
+          }
+        }
+        this.root.color = BLACK;
+      }
+
+      clear() {
+        this.root = null;
+      }
+
+      print(node = this.root, prefix = '', isLeft = true) {
+        if (!node) return '';
+        let colorCode = node.color === RED ? '\x1b[31m' : '\x1b[37m'; // red or white in terminals (ignored in browser but kept for reference)
+        let str = '';
+        if (node.right) {
+          str += this.print(node.right, prefix + (isLeft ? "│   " : "    "), false);
+        }
+        // We use a colored label for RED/BLACK visually by appending ⬤ or ◯
+        let circle = node.color === RED ? '⬤' : '◯';
+        str += prefix + (isLeft ? "└── " : "┌── ") + node.value + ' ' + circle + "\n";
+        if (node.left) {
+          str += this.print(node.left, prefix + (isLeft ? "    " : "│   "), true);
+        }
+        return str;
+      }
+    }
+
+    const rbt = new RedBlackTree();
+
+    function insertRBT() {
+      const input = document.getElementById('rbtInput');
+      const value = parseInt(input.value.trim());
+      if (isNaN(value)) {
+        alert('Please enter a valid number.');
+        return;
+      }
+      rbt.insert(value);
+      input.value = '';
+      updateDisplay();
+    }
+
+    function clearRBT() {
+      rbt.clear();
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const display = document.getElementById('rbtDisplay');
+      display.textContent = rbt.root ? rbt.print() : 'Tree is empty.';
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

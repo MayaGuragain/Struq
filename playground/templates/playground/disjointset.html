@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Disjoint Set (Union-Find) Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+  <div class="ds-container">
+    <h1>Disjoint Set (Union-Find) Playground</h1>
+    <p>Manage connectivity between elements.</p>
+
+    <div class="ds-controls">
+      <div class="input-area">
+        <input type="text" id="elementInput" placeholder="Add element" />
+        <button onclick="makeSet()">Make Set</button>
+      </div>
+
+      <div class="input-area" style="margin-top:10px;">
+        <input type="text" id="unionA" placeholder="Element A" />
+        <input type="text" id="unionB" placeholder="Element B" />
+        <button onclick="union()">Union</button>
+      </div>
+
+      <div class="input-area" style="margin-top:10px;">
+        <input type="text" id="findElem" placeholder="Find element" />
+        <button onclick="find()">Find</button>
+      </div>
+
+      <div class="button-area" style="margin-top:10px;">
+        <button onclick="resetSets()">Reset</button>
+      </div>
+    </div>
+
+    <pre id="dsDisplay" class="empty">No sets created yet.</pre>
+  </div>
+
+<script>
+  class DisjointSet {
+    constructor() {
+      this.parent = {};
+    }
+    makeSet(x) {
+      if (!(x in this.parent)) this.parent[x] = x;
+    }
+    find(x) {
+      if (this.parent[x] !== x) this.parent[x] = this.find(this.parent[x]);
+      return this.parent[x];
+    }
+    union(x, y) {
+      let rootX = this.find(x);
+      let rootY = this.find(y);
+      if (rootX !== rootY) this.parent[rootY] = rootX;
+    }
+    getSets() {
+      const sets = {};
+      for (const x in this.parent) {
+        const root = this.find(x);
+        if (!sets[root]) sets[root] = [];
+        sets[root].push(x);
+      }
+      return sets;
+    }
+  }
+
+  const ds = new DisjointSet();
+
+  function updateDisplay() {
+    const display = document.getElementById('dsDisplay');
+    const sets = ds.getSets();
+    if(Object.keys(sets).length === 0) {
+      display.textContent = 'No sets created yet.';
+      display.classList.add('empty');
+      return;
+    }
+    display.classList.remove('empty');
+    let text = '';
+    for(const root in sets) {
+      text += `${root} : [${sets[root].join(', ')}]\n`;
+    }
+    display.textContent = text;
+  }
+
+  function makeSet() {
+    const elem = document.getElementById('elementInput').value.trim();
+    if (elem === '') {
+      alert('Please enter an element.');
+      return;
+    }
+    if (ds.parent[elem]) {
+      alert(`Element "${elem}" already exists.`);
+    } else {
+      ds.makeSet(elem);
+      updateDisplay();
+    }
+    document.getElementById('elementInput').value = '';
+  }
+
+  function union() {
+    const a = document.getElementById('unionA').value.trim();
+    const b = document.getElementById('unionB').value.trim();
+    if (a === '' || b === '') {
+      alert('Please enter both elements for union.');
+      return;
+    }
+    if (!(a in ds.parent)) {
+      alert(`Element "${a}" does not exist.`);
+      return;
+    }
+    if (!(b in ds.parent)) {
+      alert(`Element "${b}" does not exist.`);
+      return;
+    }
+    ds.union(a, b);
+    updateDisplay();
+    document.getElementById('unionA').value = '';
+    document.getElementById('unionB').value = '';
+  }
+
+  function find() {
+    const elem = document.getElementById('findElem').value.trim();
+    if (elem === '') {
+      alert('Please enter an element to find.');
+      return;
+    }
+    if (!(elem in ds.parent)) {
+      alert('Element not found.');
+      return;
+    }
+    const root = ds.find(elem);
+    alert(`Root of ${elem} is ${root}`);
+    document.getElementById('findElem').value = '';
+  }
+
+  function resetSets() {
+    ds.parent = {};
+    updateDisplay();
+    document.getElementById('elementInput').value = '';
+    document.getElementById('unionA').value = '';
+    document.getElementById('unionB').value = '';
+    document.getElementById('findElem').value = '';
+  }
+
+  updateDisplay();
+</script>
+</body>
+</html>
+

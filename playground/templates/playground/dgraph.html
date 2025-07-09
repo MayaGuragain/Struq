@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Directed Graph Playground</title>
+  <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+  <div class="dgraph-container">
+    <h1>Directed Graph Playground</h1>
+    <p>Create graphs where edges have direction. Useful for DAGs, topological sort.</p>
+
+    <div class="dgraph-controls">
+      <div class="input-area">
+        <input type="text" id="vertexInput" placeholder="Enter vertex name" />
+        <button onclick="addVertex()">Add Vertex</button>
+      </div>
+
+      <div class="input-area" style="margin-top: 10px;">
+        <input type="text" id="edgeFrom" placeholder="From vertex" />
+        <input type="text" id="edgeTo" placeholder="To vertex" />
+        <button onclick="addEdge()">Add Directed Edge</button>
+      </div>
+
+      <div class="button-area" style="margin-top: 10px;">
+        <button onclick="resetGraph()">Reset Graph</button>
+      </div>
+    </div>
+
+    <pre id="dgraphDisplay" class="empty">Graph is empty.</pre>
+  </div>
+
+  <script>
+    let graph = {};
+
+    function updateDisplay() {
+      const display = document.getElementById('dgraphDisplay');
+      const entries = Object.entries(graph);
+      if (entries.length === 0) {
+        display.textContent = 'Graph is empty.';
+        display.classList.add('empty');
+        return;
+      }
+      display.classList.remove('empty');
+      let text = '';
+      for (const [vertex, edges] of entries) {
+        text += `${vertex} → [${edges.join(', ')}]\n`;
+      }
+      display.textContent = text;
+    }
+
+    function addVertex() {
+      const v = document.getElementById('vertexInput').value.trim();
+      if (!v) {
+        alert('Please enter a vertex name.');
+        return;
+      }
+      if (v in graph) {
+        alert(`Vertex "${v}" already exists.`);
+      } else {
+        graph[v] = [];
+        updateDisplay();
+      }
+      document.getElementById('vertexInput').value = '';
+    }
+
+    function addEdge() {
+      const from = document.getElementById('edgeFrom').value.trim();
+      const to = document.getElementById('edgeTo').value.trim();
+
+      if (!from || !to) {
+        alert('Please enter both "From" and "To" vertex names.');
+        return;
+      }
+      if (!(from in graph)) {
+        alert(`Vertex "${from}" does not exist.`);
+        return;
+      }
+      if (!(to in graph)) {
+        alert(`Vertex "${to}" does not exist.`);
+        return;
+      }
+      if (!graph[from].includes(to)) {
+        graph[from].push(to);
+        updateDisplay();
+      } else {
+        alert(`Directed edge from "${from}" to "${to}" already exists.`);
+      }
+      document.getElementById('edgeFrom').value = '';
+      document.getElementById('edgeTo').value = '';
+    }
+
+    function resetGraph() {
+      graph = {};
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>

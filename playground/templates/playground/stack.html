@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stack Playground</title>
+    <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+</head>
+<body>
+    <div class="stack-container">
+        <h1>Welcome to the Stack Playground</h1>
+
+        <div class="stack-controls">
+    <div class="input-area">
+        <input type="text" id="pushInput" placeholder="Enter value to push" />
+    </div>
+    <div class="button-area">
+        <button onclick="push()">Push</button>
+        <button onclick="pop()">Pop</button>
+        <button onclick="peek()">Peek</button>
+        <button onclick="resetStack()">Reset</button>
+    </div>
+</div>
+
+<div id="stackDisplay" class="empty">Stack is empty.</div>
+
+    </div>
+
+    <script>
+        let stack = [];
+
+        function updateDisplay(currentStack) {
+            const display = document.getElementById('stackDisplay');
+            display.innerHTML = '';
+
+            if (currentStack.length === 0) {
+                display.classList.add('empty');
+                display.textContent = 'Stack is empty.';
+                return;
+            }
+
+            display.classList.remove('empty');
+
+            for (let i = currentStack.length - 1; i >= 0; i--) {
+                const item = document.createElement('div');
+                item.className = 'stack-item';
+                item.textContent = currentStack[i];
+                display.appendChild(item);
+            }
+        }
+
+        function push() {
+            const input = document.getElementById('pushInput');
+            const value = input.value.trim();
+            if (value === '') {
+                alert('Please enter a value to push.');
+                return;
+            }
+            stack.push(value);
+            updateDisplay(stack);
+            input.value = '';
+        }
+
+        function pop() {
+            if (stack.length === 0) {
+                alert('Stack is empty.');
+                return;
+            }
+            const popped = stack.pop();
+            alert('Popped: ' + popped);
+            updateDisplay(stack);
+        }
+
+        function peek() {
+            if (stack.length === 0) {
+                alert('Stack is empty.');
+                return;
+            }
+            alert('Top element: ' + stack[stack.length - 1]);
+        }
+
+        function resetStack() {
+            stack = [];
+            updateDisplay(stack);
+        }
+
+        updateDisplay(stack);
+    </script>
+</body>
+</html>

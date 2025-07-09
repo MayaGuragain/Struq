@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deque Playground</title>
+
+    <!-- same CSS file you already have -->
+    <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+
+    <!-- one tiny deque‑only tweak -->
+    <style>
+        /* show front‑of‑deque at the top, back at the bottom */
+        .deque-display { flex-direction: column; }
+    </style>
+</head>
+<body>
+    <div class="stack-container">
+        <h1>Deque Playground</h1>
+        <p style="margin-top:-10px;">Double‑ended queue: insert / remove at <strong>both</strong> ends.</p>
+
+        <div class="stack-controls">
+            <!-- input first -->
+            <div class="input-area">
+                <input type="text" id="dequeInput" placeholder="Enter value" />
+            </div>
+
+            <!-- buttons -->
+            <div class="button-area">
+                <button onclick="pushFront()">Push&nbsp;Front</button>
+                <button onclick="pushBack()">Push&nbsp;Back</button>
+                <button onclick="popFront()">Pop&nbsp;Front</button>
+                <button onclick="popBack()">Pop&nbsp;Back</button>
+                <button onclick="resetDeque()">Reset</button>
+            </div>
+        </div>
+
+        <!-- deque visual -->
+        <div id="dequeDisplay" class="empty deque-display">Deque is empty.</div>
+    </div>
+
+    <script>
+        /* --- simple in‑memory deque --- */
+        let deque = [];
+
+        function updateDisplay() {
+            const display = document.getElementById('dequeDisplay');
+            display.innerHTML = '';
+
+            if (deque.length === 0) {
+                display.classList.add('empty');
+                display.textContent = 'Deque is empty.';
+                return;
+            }
+
+            display.classList.remove('empty');
+
+            // front element first (top), back element last (bottom)
+            for (let i = 0; i < deque.length; i++) {
+                const item = document.createElement('div');
+                item.className = 'stack-item';
+                item.textContent = deque[i];
+                display.appendChild(item);
+            }
+        }
+
+        function getInputVal() {
+            const box = document.getElementById('dequeInput');
+            const val = box.value.trim();
+            box.value = '';
+            return val;
+        }
+
+        /* --- operations --- */
+        function pushFront() {
+            const val = getInputVal();
+            if (!val) return alert('Enter a value first!');
+            deque.unshift(val);
+            updateDisplay();
+        }
+
+        function pushBack() {
+            const val = getInputVal();
+            if (!val) return alert('Enter a value first!');
+            deque.push(val);
+            updateDisplay();
+        }
+
+        function popFront() {
+            if (!deque.length) return alert('Deque is empty.');
+            alert('Popped from front: ' + deque.shift());
+            updateDisplay();
+        }
+
+        function popBack() {
+            if (!deque.length) return alert('Deque is empty.');
+            alert('Popped from back: ' + deque.pop());
+            updateDisplay();
+        }
+
+        function resetDeque() {
+            deque = [];
+            updateDisplay();
+        }
+
+        /* initial render */
+        updateDisplay();
+    </script>
+</body>
+</html>
