@@ -7,28 +7,6 @@
 
   <!-- global theme -->
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
-
-  <!-- component‑specific tweaks -->
-  <style>
-    .tree-display {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 15px;
-      padding: 15px;
-      min-height: 160px;
-      white-space: pre;
-      color: white;
-      font-family: "Courier New", monospace;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.25);
-      overflow-x: auto;
-    }
-    .traversal-output {
-      margin-top: 12px;
-      font-weight: 700;
-      color: #fff;
-    }
-    /* make search / delete boxes sit on same row */
-    .inline-inputs input { width: 160px; }
-  </style>
 </head>
 <body>
   <div class="stack-container">
@@ -58,8 +36,7 @@
     </div>
 
     <!-- Traversal buttons -->
-    <h3 style="margin-bottom: 10px;">Traversals:</h3>
-    <div class="button-area" style="margin-bottom: 20px;">
+    <div class="button-area traversal-buttons" style="margin-bottom: 20px; justify-content: center;">
       <button onclick="showInorder()">Inorder</button>
       <button onclick="showPreorder()">Preorder</button>
       <button onclick="showPostorder()">Postorder</button>
