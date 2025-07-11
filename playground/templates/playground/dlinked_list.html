@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <title>Doubly Linked List Playground</title>
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
-
 </head>
 <body>
   <div class="stack-container">
@@ -14,11 +13,19 @@
     <div class="stack-controls">
       <div class="input-area">
         <input type="text" id="valueInput" placeholder="Enter value" />
+        <input type="number" id="indexInput" placeholder="Enter index (optional)" min="0" />
       </div>
       <div class="button-area">
         <button onclick="insertHead()">Insert Head</button>
         <button onclick="insertTail()">Insert Tail</button>
+        <button onclick="insertAtIndex()">Insert at Index</button>
+
+        <button onclick="deleteHead()">Delete Head</button>
+        <button onclick="deleteTail()">Delete Tail</button>
+        <button onclick="deleteAtIndex()">Delete at Index</button>
         <button onclick="deleteValue()">Delete Value</button>
+
+        <button onclick="searchValue()">Search</button>
         <button onclick="resetList()">Reset</button>
       </div>
     </div>
@@ -109,6 +116,29 @@
 
     const dll = new DoublyList();
 
+    function getVal() {
+      const input = document.getElementById("valueInput");
+      const val = input.value.trim();
+      input.value = "";
+      if (val === "") {
+        alert("Enter a value.");
+        return null;
+      }
+      return val;
+    }
+
+    function getIndex() {
+      const input = document.getElementById("indexInput");
+      const val = input.value.trim();
+      input.value = "";
+      const idx = parseInt(val, 10);
+      if (val === "" || isNaN(idx) || idx < 0) {
+        alert("Enter a valid index.");
+        return null;
+      }
+      return idx;
+    }
+
     function insertHead() {
       const val = getVal();
       if (val !== null) {
@@ -125,6 +155,68 @@
       }
     }
 
+    function insertAtIndex() {
+      const val = getVal();
+      const idx = getIndex();
+      if (val === null || idx === null) return;
+
+      let cur = dll.head, count = 0;
+      const node = new Node(val);
+      if (idx === 0) return insertHead(val);
+      while (cur && count < idx - 1) {
+        cur = cur.next;
+        count++;
+      }
+      if (!cur) return insertTail(val);
+
+      node.next = cur.next;
+      node.prev = cur;
+      if (cur.next) cur.next.prev = node;
+      else dll.tail = node;
+      cur.next = node;
+
+      render();
+    }
+
+    function deleteHead() {
+      if (!dll.head) return alert("List is empty.");
+      if (dll.head === dll.tail) dll.head = dll.tail = null;
+      else {
+        dll.head = dll.head.next;
+        dll.head.prev = null;
+      }
+      render();
+    }
+
+    function deleteTail() {
+      if (!dll.tail) return alert("List is empty.");
+      if (dll.head === dll.tail) dll.head = dll.tail = null;
+      else {
+        dll.tail = dll.tail.prev;
+        dll.tail.next = null;
+      }
+      render();
+    }
+
+    function deleteAtIndex() {
+      const idx = getIndex();
+      if (idx === null) return;
+
+      let cur = dll.head, count = 0;
+      if (idx === 0) return deleteHead();
+
+      while (cur && count < idx) {
+        cur = cur.next;
+        count++;
+      }
+      if (!cur) return alert("Index out of range.");
+
+      if (cur.prev) cur.prev.next = cur.next;
+      if (cur.next) cur.next.prev = cur.prev;
+      if (cur === dll.tail) dll.tail = cur.prev;
+      render();
+    }
+
     function deleteValue() {
       const val = prompt("Enter value to delete:");
       if (val && val.trim() !== "") {
@@ -135,20 +227,24 @@
       }
     }
 
-    function resetList() {
-      dll.reset();
-      render();
-    }
+    function searchValue() {
+      const val = prompt("Enter value to search:");
+      if (!val) return;
 
-    function getVal() {
-      const input = document.getElementById("valueInput");
-      const val = input.value.trim();
-      if (val === "") {
-        alert("Enter a value.");
-        return null;
-      }
-      input.value = "";
-      return val;
+      const nodes = document.querySelectorAll(".stack-item");
+      let found = false;
+      nodes.forEach(node => {
+        if (node.textContent === val) {
+          node.style.background = "#fcc45c";
+          node.style.color = "#000";
+          found = true;
+        } else {
+          node.style.background = "rgba(167,119,227,0.8)";
+          node.style.color = "#fff";
+        }
+      });
+
+      if (!found) alert("Value not found.");
     }
 
     function render() {
@@ -179,86 +275,6 @@
         }
       });
     }
-    function insertAtIndex() {
-  const val = getVal();
-  const idx = parseInt(prompt("Enter index to insert at:"), 10);
-  if (val === null || isNaN(idx) || idx < 0) return alert("Invalid input.");
-
-  let cur = dll.head, count = 0;
-  const node = new Node(val);
-  if (idx === 0) return insertHead(val);
-  while (cur && count < idx - 1) {
-    cur = cur.next;
-    count++;
-  }
-  if (!cur) return insertTail(val);
-
-  node.next = cur.next;
-  node.prev = cur;
-  if (cur.next) cur.next.prev = node;
-  else dll.tail = node;
-  cur.next = node;
-
-  render();
-}
-
-function deleteHead() {
-  if (!dll.head) return alert("List is empty.");
-  if (dll.head === dll.tail) dll.head = dll.tail = null;
-  else {
-    dll.head = dll.head.next;
-    dll.head.prev = null;
-  }
-  render();
-}
-
-function deleteTail() {
-  if (!dll.tail) return alert("List is empty.");
-  if (dll.head === dll.tail) dll.head = dll.tail = null;
-  else {
-    dll.tail = dll.tail.prev;
-    dll.tail.next = null;
-  }
-  render();
-}
-
-function deleteAtIndex() {
-  const idx = parseInt(prompt("Enter index to delete:"), 10);
-  if (isNaN(idx) || idx < 0) return alert("Invalid index.");
-  let cur = dll.head, count = 0;
-
-  if (idx === 0) return deleteHead();
-  while (cur && count < idx) {
-    cur = cur.next;
-    count++;
-  }
-  if (!cur) return alert("Index out of range.");
-
-  if (cur.prev) cur.prev.next = cur.next;
-  if (cur.next) cur.next.prev = cur.prev;
-  if (cur === dll.tail) dll.tail = cur.prev;
-  render();
-}
-
-function searchValue() {
-  const val = prompt("Enter value to search:");
-  if (!val) return;
-
-  const nodes = document.querySelectorAll(".stack-item");
-  let found = false;
-  nodes.forEach(node => {
-    if (node.textContent === val) {
-      node.style.background = "#fcc45c";
-      node.style.color = "#000";
-      found = true;
-    } else {
-      node.style.background = "rgba(167,119,227,0.8)";
-      node.style.color = "#fff";
-    }
-  });
-
-  if (!found) alert("Value not found.");
-}
 
     render();
   </script>
