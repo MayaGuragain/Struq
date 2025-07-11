@@ -5,17 +5,95 @@
   <meta charset="UTF-8" />
   <title>Max Heap Playground</title>
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
+  <style>
+    /* Heap container and node styling */
+    .heap-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      height: 320px;
+      margin: 20px auto;
+    }
+    #heapNodes {
+      position: relative;
+      width: 100%;
+      height: 320px;
+    }
+    #heapNodes .node {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: rgba(167, 119, 227, 0.8);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      box-shadow: 0 0 8px rgba(167, 119, 227, 0.8);
+      user-select: none;
+      cursor: default;
+      transition: transform 0.2s ease;
+    }
+    #heapNodes .node:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 15px rgba(167, 119, 227, 1);
+    }
+    svg#lineCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Controls container styling */
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .controls input[type="number"] {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      font-size: 1rem;
+      width: 150px;
+    }
+    .controls button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #a777e3;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(167, 119, 227, 0.6);
+      transition: background 0.3s ease;
+    }
+    .controls button:hover {
+      background: #7b4bc7;
+    }
+  </style>
 </head>
 <body>
-  <h1>Max Heap Playground</h1>
+    <div class="stack-container">
+    <h1>Max Heap Playground</h1>
 
-  <input type="number" id="maxHeapInput" placeholder="Enter number" />
-  <button onclick="insertMaxHeap()">Insert</button>
-  <button onclick="extractMax()">Extract Max</button>
-  <button onclick="peekMax()">Peek Max</button>
-  <button onclick="resetMaxHeap()">Reset Heap</button>
+    <div class="controls">
+      <input type="number" id="maxHeapInput" placeholder="Enter number" />
+      <button onclick="insertMaxHeap()">Insert</button>
+      <button onclick="extractMax()">Extract Max</button>
+      <button onclick="peekMax()">Peek Max</button>
+      <button onclick="resetMaxHeap()">Reset Heap</button>
+    </div>
 
-  <div id="heapDisplay">Heap is empty.</div>
+    <div class="heap-container">
+      <svg id="lineCanvas"></svg>
+      <div id="heapNodes"></div>
+    </div>
+  </div>
 
   <script>
     class MaxHeap {
@@ -82,8 +160,7 @@
     const maxHeap = new MaxHeap();
 
     function updateDisplay() {
-      const display = document.getElementById('heapDisplay');
-      display.textContent = maxHeap.heap.length ? maxHeap.toString() : 'Heap is empty.';
+      renderHeap();
     }
 
     function insertMaxHeap() {
@@ -117,6 +194,75 @@
     function resetMaxHeap() {
       maxHeap.clear();
       updateDisplay();
+    }
+
+    function renderHeap() {
+      const container = document.getElementById("heapNodes");
+      const svg = document.getElementById("lineCanvas");
+      container.innerHTML = "";
+      svg.innerHTML = "";
+
+      const width = container.clientWidth || 800;
+      const height = 320;
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+
+      const positions = getNodePositions(maxHeap.heap.length, width, 90);
+      const nodeSize = 40;
+
+      maxHeap.heap.forEach((val, i) => {
+        const [x, y] = positions[i];
+
+        // Create node element
+        const node = document.createElement("div");
+        node.className = "node";
+        node.textContent = val;
+        node.style.left = `${x - nodeSize / 2}px`;
+        node.style.top = `${y - nodeSize / 2}px`;
+        container.appendChild(node);
+
+        // Draw line to parent
+        if (i !== 0) {
+          const parentIndex = maxHeap.getParentIndex(i);
+          const [px, py] = positions[parentIndex];
+
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", px);
+          line.setAttribute("y1", py);
+          line.setAttribute("x2", x);
+          line.setAttribute("y2", y);
+          line.setAttribute("stroke", "rgba(167, 119, 227, 0.6)");
+          line.setAttribute("stroke-width", "3");
+          svg.appendChild(line);
+        }
+      });
+
+      // If empty, show a placeholder message inside container
+      if (maxHeap.heap.length === 0) {
+        container.textContent = "Heap is empty.";
+        container.style.color = "rgba(255, 255, 255, 0.7)";
+        container.style.textAlign = "center";
+        container.style.paddingTop = "130px";
+      } else {
+        container.style.color = "";
+        container.style.textAlign = "";
+        container.style.paddingTop = "";
+      }
+    }
+
+    function getNodePositions(n, width, levelHeight) {
+      const pos = [];
+      let level = 0, index = 0;
+      while (index < n) {
+        const count = 2 ** level;
+        const spacing = width / (count + 1);
+        for (let i = 0; i < count && index < n; i++) {
+          pos.push([(i + 1) * spacing, (level + 1) * levelHeight]);
+          index++;
+        }
+        level++;
+      }
+      return pos;
     }
 
     updateDisplay();

@@ -5,31 +5,22 @@
   <meta charset="UTF-8" />
   <title>AVL Tree Playground</title>
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
-  <style>
-    pre#avlDisplay {
-      margin-top: 20px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 12px;
-      min-height: 120px;
-      color: white;
-      font-family: monospace;
-      white-space: pre;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-    }
-    button, input {
-      margin: 5px 8px 5px 0;
-    }
-  </style>
 </head>
 <body>
   <div class="stack-container">
     <h1>AVL Tree Playground</h1>
-    <p>Self-balancing binary search tree.</p>
+    <p style="margin-top: -10px;">Self-balancing binary search tree.</p>
 
-    <input type="number" id="avlInput" placeholder="Enter number" />
-    <button onclick="insertAVL()">Insert</button>
-    <button onclick="clearAVL()">Clear Tree</button>
+    <!-- Controls styled like the others -->
+    <div class="stack-controls">
+      <div class="input-area">
+        <input type="number" id="avlInput" placeholder="Enter number" />
+      </div>
+      <div class="button-area">
+        <button onclick="insertAVL()">Insert</button>
+        <button onclick="clearAVL()">Clear Tree</button>
+      </div>
+    </div>
 
     <pre id="avlDisplay">Tree is empty.</pre>
   </div>
@@ -62,10 +53,8 @@
         let T2 = x.right;
         x.right = y;
         y.left = T2;
-
         y.height = Math.max(this.getHeight(y.left), this.getHeight(y.right)) + 1;
         x.height = Math.max(this.getHeight(x.left), this.getHeight(x.right)) + 1;
-
         return x;
       }
 
@@ -74,40 +63,26 @@
         let T2 = y.left;
         y.left = x;
         x.right = T2;
-
         x.height = Math.max(this.getHeight(x.left), this.getHeight(x.right)) + 1;
         y.height = Math.max(this.getHeight(y.left), this.getHeight(y.right)) + 1;
-
         return y;
       }
 
       insert(node, value) {
         if (!node) return new AVLNode(value);
-        if (value < node.value) {
-          node.left = this.insert(node.left, value);
-        } else if (value > node.value) {
-          node.right = this.insert(node.right, value);
-        } else {
-          return node; // Duplicate values not allowed
-        }
+        if (value < node.value) node.left = this.insert(node.left, value);
+        else if (value > node.value) node.right = this.insert(node.right, value);
+        else return node;
 
         node.height = 1 + Math.max(this.getHeight(node.left), this.getHeight(node.right));
         let balance = this.getBalance(node);
 
-        // Left Left
-        if (balance > 1 && value < node.left.value) {
-          return this.rightRotate(node);
-        }
-        // Right Right
-        if (balance < -1 && value > node.right.value) {
-          return this.leftRotate(node);
-        }
-        // Left Right
+        if (balance > 1 && value < node.left.value) return this.rightRotate(node);
+        if (balance < -1 && value > node.right.value) return this.leftRotate(node);
         if (balance > 1 && value > node.left.value) {
           node.left = this.leftRotate(node.left);
           return this.rightRotate(node);
         }
-        // Right Left
         if (balance < -1 && value < node.right.value) {
           node.right = this.rightRotate(node.right);
           return this.leftRotate(node);
