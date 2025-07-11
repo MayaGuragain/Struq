@@ -6,33 +6,6 @@
   <title>Doubly Linked List Playground</title>
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
 
-  <style>
-    .label {
-      font-weight: bold;
-      margin: 20px 0 5px;
-      color: #f0f0f0;
-    }
-
-    .list-display {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.15);
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-      color: white;
-      min-height: 60px;
-    }
-
-    .arrow {
-      font-size: 1.2rem;
-      color: #fff;
-      margin: 0 5px;
-      user-select: none;
-    }
-  </style>
 </head>
 <body>
   <div class="stack-container">
@@ -206,6 +179,86 @@
         }
       });
     }
+    function insertAtIndex() {
+  const val = getVal();
+  const idx = parseInt(prompt("Enter index to insert at:"), 10);
+  if (val === null || isNaN(idx) || idx < 0) return alert("Invalid input.");
+
+  let cur = dll.head, count = 0;
+  const node = new Node(val);
+  if (idx === 0) return insertHead(val);
+  while (cur && count < idx - 1) {
+    cur = cur.next;
+    count++;
+  }
+  if (!cur) return insertTail(val);
+
+  node.next = cur.next;
+  node.prev = cur;
+  if (cur.next) cur.next.prev = node;
+  else dll.tail = node;
+  cur.next = node;
+
+  render();
+}
+
+function deleteHead() {
+  if (!dll.head) return alert("List is empty.");
+  if (dll.head === dll.tail) dll.head = dll.tail = null;
+  else {
+    dll.head = dll.head.next;
+    dll.head.prev = null;
+  }
+  render();
+}
+
+function deleteTail() {
+  if (!dll.tail) return alert("List is empty.");
+  if (dll.head === dll.tail) dll.head = dll.tail = null;
+  else {
+    dll.tail = dll.tail.prev;
+    dll.tail.next = null;
+  }
+  render();
+}
+
+function deleteAtIndex() {
+  const idx = parseInt(prompt("Enter index to delete:"), 10);
+  if (isNaN(idx) || idx < 0) return alert("Invalid index.");
+  let cur = dll.head, count = 0;
+
+  if (idx === 0) return deleteHead();
+  while (cur && count < idx) {
+    cur = cur.next;
+    count++;
+  }
+  if (!cur) return alert("Index out of range.");
+
+  if (cur.prev) cur.prev.next = cur.next;
+  if (cur.next) cur.next.prev = cur.prev;
+  if (cur === dll.tail) dll.tail = cur.prev;
+  render();
+}
+
+function searchValue() {
+  const val = prompt("Enter value to search:");
+  if (!val) return;
+
+  const nodes = document.querySelectorAll(".stack-item");
+  let found = false;
+  nodes.forEach(node => {
+    if (node.textContent === val) {
+      node.style.background = "#fcc45c";
+      node.style.color = "#000";
+      found = true;
+    } else {
+      node.style.background = "rgba(167,119,227,0.8)";
+      node.style.color = "#fff";
+    }
+  });
+
+  if (!found) alert("Value not found.");
+}
 
     render();
   </script>
