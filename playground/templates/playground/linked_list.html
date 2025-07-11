@@ -3,25 +3,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Linked List Playground</title>
-
-    <!-- reuse the same glassy style sheet -->
+    <title>Linked List Playground</title>
     <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
-
 </head>
 <body>
     <div class="stack-container">
-        <h1>Linked List Playground</h1>
+        <h1>Linked List Playground</h1>
 
         <div class="stack-controls">
             <div class="input-area">
-                <input type="text" id="nodeInput" placeholder="Enter value" />
+                <input type="text" id="nodeValue" placeholder="Enter value" />
+                <input type="number" id="nodeIndex" placeholder="Enter index (optional)" min="0" />
             </div>
 
             <div class="button-area">
-                <button onclick="insertNode()">Insert</button>
-                <button onclick="deleteNode()">Delete</button>
-                <button onclick="displayList()">Display</button>
+                <button onclick="insertAtHead()">Insert at Head</button>
+                <button onclick="insertAtTail()">Insert at Tail</button>
+                <button onclick="insertAtIndex()">Insert at Index</button>
+
+                <button onclick="deleteHead()">Delete Head</button>
+                <button onclick="deleteTail()">Delete Tail</button>
+                <button onclick="deleteAtIndex()">Delete at Index</button>
+
+                <button onclick="searchValue()">Search</button>
                 <button onclick="resetList()">Reset</button>
             </div>
         </div>
@@ -30,7 +34,6 @@
     </div>
 
     <script>
-        /* --- simple singly‑linked‑list using an array for demo --- */
         let linkedList = [];
 
         function updateDisplay() {
@@ -60,38 +63,73 @@
             });
         }
 
-        function getInputVal() {
-            const box = document.getElementById('nodeInput');
-            const val = box.value.trim();
-            box.value = '';
+        function getValue() {
+            const val = document.getElementById('nodeValue').value.trim();
+            document.getElementById('nodeValue').value = '';
             return val;
         }
 
-        function insertNode() {
-            const value = getInputVal();
-            if (!value) return alert('Please enter a value.');
-            linkedList.push(value);          // inserts at tail
+        function getIndex() {
+            const indexInput = document.getElementById('nodeIndex').value;
+            return indexInput === '' ? null : parseInt(indexInput, 10);
+        }
+
+        function insertAtHead() {
+            const val = getValue();
+            if (!val) return alert('Enter a value.');
+            linkedList.unshift(val);
             updateDisplay();
         }
 
-        function deleteNode() {
-            if (!linkedList.length) return alert('The list is empty.');
-            const value = prompt('Enter value to delete:');
-            if (value === null) return;       // user pressed cancel
-            const idx = linkedList.indexOf(value.trim());
-            if (idx === -1) return alert('Value not found.');
+        function insertAtTail() {
+            const val = getValue();
+            if (!val) return alert('Enter a value.');
+            linkedList.push(val);
+            updateDisplay();
+        }
+
+        function insertAtIndex() {
+            const val = getValue();
+            const idx = getIndex();
+            if (!val) return alert('Enter a value.');
+            if (idx === null || idx < 0 || idx > linkedList.length) return alert('Enter a valid index.');
+            linkedList.splice(idx, 0, val);
+            updateDisplay();
+        }
+
+        function deleteHead() {
+            if (!linkedList.length) return alert('List is empty.');
+            linkedList.shift();
+            updateDisplay();
+        }
+
+        function deleteTail() {
+            if (!linkedList.length) return alert('List is empty.');
+            linkedList.pop();
+            updateDisplay();
+        }
+
+        function deleteAtIndex() {
+            const idx = getIndex();
+            if (idx === null || idx < 0 || idx >= linkedList.length) return alert('Enter a valid index.');
             linkedList.splice(idx, 1);
             updateDisplay();
         }
 
-        function displayList() { updateDisplay(); }
+        function searchValue() {
+            const val = getValue();
+            if (!val) return alert('Enter a value to search.');
+            const idx = linkedList.indexOf(val);
+            if (idx === -1) return alert(`Value "${val}" not found.`);
+            alert(`Value "${val}" found at index ${idx}.`);
+        }
 
         function resetList() {
             linkedList = [];
             updateDisplay();
         }
 
-        /* initial render */
+        // Initial display render
         updateDisplay();
     </script>
 </body>
