@@ -1,6 +1,5 @@
 from django.urls import path
 from playground.views import (
-    disjointset_views,
     stack_views,
     queue_views,
     linked_list_views,
@@ -15,18 +14,12 @@ from playground.views import (
     tup_views,
     avl_views,
     redblack_views,
-    seg_views,
-    fenwicktree_views,
-    trie_views,
     graph_views,
     wgraph_views,
     dgraph_views,
     pq_views,
     cb_views,
-    skiplist_views,
-    rope_views,
     ht_views,
-    bitset_views,
     matrix_views,
     heapq_views,
 )
@@ -74,28 +67,15 @@ urlpatterns = [
     path('avl/', avl_views.avl_view, name='avl'),
     path('red-black/', redblack_views.redblack_view, name='red_black'),
 
-    # Segment and Fenwick
-    path('segment-tree/', seg_views.seg_view, name='segment_tree'),
-    path('fenwick-tree/', fenwicktree_views.fenwicktree_view, name='fenwicktree'),
-
-    # Trie
-    path('trie/', trie_views.trie_view, name='trie'),
-
     # Graphs
     path('graph/', graph_views.graph_view, name='graph'),
     path('weighted-graph/', wgraph_views.wgraph_view, name='weighted_graph'),
     path('directed-graph/', dgraph_views.dgraph_view, name='directed_graph'),
 
-    # Disjoint Set
-    path('disjointset/', disjointset_views.disjointset_view, name='disjointset'),
-
     # Specialized structures
     path('priority-queue/', pq_views.pq_view, name='priority_queue'),
     path('circular-buffer/', cb_views.cb_view, name='circular_buffer'),
-    path('skip-list/', skiplist_views.skiplist_view, name='skip_list'),
-    path('rope/', rope_views.rope_view, name='rope'),
     path('hash-table/', ht_views.ht_view, name='hash_table'),
-    path('bitset/', bitset_views.bitset_view, name='bitset'),
 
     # Matrix and heapq
     path('matrix/', matrix_views.matrix_view, name='matrix'),
