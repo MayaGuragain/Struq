@@ -2,7 +2,6 @@
 
 Welcome to **Struq**, a beautifully styled, browser-based playground where you can explore and visualize common data structures like stacks, queues, linked lists, hash tables, binary trees, and heaps.
 
-![Struq Demo](https://img.youtube.com/vi/8e0CTfgALGI/maxresdefault.jpg)
 [▶ Watch Demo on YouTube](https://youtu.be/8e0CTfgALGI)
 
 ---
