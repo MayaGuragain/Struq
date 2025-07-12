@@ -66,7 +66,7 @@ h1 {
 /* ---------- TILE GRID ---------- */
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* flexible equal columns */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
   gap: 20px;
   width: 95%;
   max-width: 1100px;
@@ -74,7 +74,7 @@ h1 {
 }
 
 .tile {
-  aspect-ratio: 1 / 1;  /* makes each tile a square */
+  aspect-ratio: 1 / 1;  /* makes each tile a square using ratio properties */
   width: 150px;
   display: flex;
   flex-direction: column;
