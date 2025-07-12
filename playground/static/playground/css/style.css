@@ -460,4 +460,29 @@ footer a:hover {
       white-space: pre-wrap;
       min-height: 60px;
     }
-    
+
+.back-home-inner {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  padding-top: 10px;
+}
+
+.back-home-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.back-home-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #000;
+  transform: translateY(-2px);
+}
