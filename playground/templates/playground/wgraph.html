@@ -1,34 +1,33 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Weighted Graph Playground</title>
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
 </head>
 <body>
-  <div class="wgraph-container">
+  <div class="stack-container">
     <h1>Weighted Graph Playground</h1>
-    <p>Represent graphs with edge weights. Great for Dijkstra’s algorithm.</p>
+    <p class="subtitle">Represent graphs with edge weights — great for Dijkstra’s algorithm.</p>
 
-    <div class="wgraph-controls">
-      <div class="input-area">
-        <input type="text" id="vertexInput" placeholder="Enter vertex name" />
-        <button onclick="addVertex()">Add Vertex</button>
-      </div>
-
-      <div class="input-area" style="margin-top: 10px;">
-        <input type="text" id="edgeFrom" placeholder="From vertex" />
-        <input type="text" id="edgeTo" placeholder="To vertex" />
-        <input type="number" id="edgeWeight" placeholder="Weight" min="0" step="any" />
-        <button onclick="addEdge()">Add Weighted Edge</button>
-      </div>
-
-      <div class="button-area" style="margin-top: 10px;">
-        <button onclick="resetGraph()">Reset Graph</button>
-      </div>
+    <div class="stack-controls">
+      <input type="text" id="vertexInput" placeholder="Enter vertex name" />
+      <button onclick="addVertex()">Add Vertex</button>
     </div>
 
-    <pre id="wgraphDisplay" class="empty">Graph is empty.</pre>
+    <div class="stack-controls">
+      <input type="text" id="edgeFrom" placeholder="From vertex" />
+      <input type="text" id="edgeTo" placeholder="To vertex" />
+      <input type="number" id="edgeWeight" placeholder="Weight" min="0" step="any" />
+      <button onclick="addEdge()">Add Weighted Edge</button>
+    </div>
+
+    <div class="stack-controls">
+      <button onclick="resetGraph()">Reset Graph</button>
+    </div>
+
+    <pre id="wgraphDisplay" class="tree-display empty">Graph is empty.</pre>
   </div>
 
   <script>
@@ -45,7 +44,6 @@
       display.classList.remove('empty');
       let text = '';
       for (const [vertex, edges] of entries) {
-        // edges is array of objects: {to, weight}
         const edgesStr = edges.map(e => `${e.to} (w=${e.weight})`).join(', ');
         text += `${vertex} → [${edgesStr}]\n`;
       }
@@ -54,17 +52,11 @@
 
     function addVertex() {
       const v = document.getElementById('vertexInput').value.trim();
-      if (!v) {
-        alert('Please enter a vertex name.');
-        return;
-      }
-      if (v in graph) {
-        alert(`Vertex "${v}" already exists.`);
-      } else {
-        graph[v] = [];
-        updateDisplay();
-      }
+      if (!v) return alert('Please enter a vertex name.');
+      if (v in graph) return alert(`Vertex "${v}" already exists.`);
+      graph[v] = [];
       document.getElementById('vertexInput').value = '';
+      updateDisplay();
     }
 
     function addEdge() {
@@ -73,29 +65,22 @@
       const weightInput = document.getElementById('edgeWeight').value.trim();
       const weight = parseFloat(weightInput);
 
-      if (!from || !to) {
-        alert('Please enter both "From" and "To" vertex names.');
-        return;
-      }
-      if (weightInput === '' || isNaN(weight) || weight < 0) {
-        alert('Please enter a valid non-negative weight.');
-        return;
-      }
-      if (!(from in graph)) {
-        alert(`Vertex "${from}" does not exist.`);
-        return;
-      }
-      if (!(to in graph)) {
-        alert(`Vertex "${to}" does not exist.`);
-        return;
-      }
-      // Prevent duplicate edges with same to and weight
+      if (!from || !to) return alert('Enter both "From" and "To" vertex names.');
+      if (weightInput === '' || isNaN(weight) || weight < 0)
+        return alert('Enter a valid non-negative weight.');
+      if (!(from in graph)) return alert(`Vertex "${from}" does not exist.`);
+      if (!(to in graph)) return alert(`Vertex "${to}" does not exist.`);
+
       if (!graph[from].some(e => e.to === to && e.weight === weight)) {
         graph[from].push({to, weight});
+        // Optional: uncomment to make undirected
+        // if (!graph[to].some(e => e.to === from && e.weight === weight))
+        //   graph[to].push({to: from, weight});
         updateDisplay();
       } else {
         alert(`Edge from "${from}" to "${to}" with weight ${weight} already exists.`);
       }
+
       document.getElementById('edgeFrom').value = '';
       document.getElementById('edgeTo').value = '';
       document.getElementById('edgeWeight').value = '';

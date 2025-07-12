@@ -13,10 +13,7 @@ from playground.views.graph_views import *
 from playground.views.wgraph_views import *
 from playground.views.dgraph_views import *
 from playground.views.pq_views import *
-from playground.views.cb_views import *
 from playground.views.ht_views import *
-from playground.views.matrix_views import *
-from playground.views.heapq_views import *
 from playground.views.set_views import *
 from playground.views.tup_views import *
 from playground.views.dict_views import *

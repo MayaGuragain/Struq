@@ -18,10 +18,7 @@ from playground.views import (
     wgraph_views,
     dgraph_views,
     pq_views,
-    cb_views,
     ht_views,
-    matrix_views,
-    heapq_views,
 )
 from playground.views import home
 
@@ -74,10 +71,5 @@ urlpatterns = [
 
     # Specialized structures
     path('priority-queue/', pq_views.pq_view, name='priority_queue'),
-    path('circular-buffer/', cb_views.cb_view, name='circular_buffer'),
     path('hash-table/', ht_views.ht_view, name='hash_table'),
-
-    # Matrix and heapq
-    path('matrix/', matrix_views.matrix_view, name='matrix'),
-    path('heapq/', heapq_views.heapq_view, name='heapq'),
 ]

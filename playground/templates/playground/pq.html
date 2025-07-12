@@ -1,33 +1,31 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Priority Queue Playground</title>
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
 </head>
 <body>
-  <div class="pq-container">
+  <div class="stack-container">
     <h1>Priority Queue Playground</h1>
-    <p>Insert items with priorities and retrieve by highest/lowest priority.</p>
+    <p class="subtitle">Insert items with priorities and retrieve them in order of priority.</p>
 
-    <div class="pq-controls">
-      <div class="input-area">
-        <input type="text" id="pqItem" placeholder="Item" />
-        <input type="number" id="pqPriority" placeholder="Priority" step="any" />
-        <button onclick="insert()">Insert</button>
-      </div>
-
-      <div class="button-area" style="margin-top: 10px;">
-        <button onclick="pop()">Pop</button>
-        <button onclick="resetQueue()">Reset</button>
-      </div>
+    <div class="stack-controls">
+      <input type="text" id="pqItem" placeholder="Item" />
+      <input type="number" id="pqPriority" placeholder="Priority" step="any" />
+      <button onclick="insert()">Insert</button>
     </div>
 
-    <pre id="pqDisplay" class="empty">Queue is empty.</pre>
+    <div class="stack-controls">
+      <button onclick="pop()">Pop</button>
+      <button onclick="resetQueue()">Reset</button>
+    </div>
+
+    <pre id="pqDisplay" class="tree-display empty">Queue is empty.</pre>
   </div>
 
   <script>
-    // Min-priority queue: lower priority value = higher priority
     const priorityQueue = [];
 
     function updateDisplay() {
@@ -47,13 +45,13 @@
       const item = document.getElementById('pqItem').value.trim();
       const priority = parseFloat(document.getElementById('pqPriority').value);
       if (!item || isNaN(priority)) {
-        alert('Please enter both item and a valid priority.');
+        alert('Please enter both an item and a valid priority.');
         return;
       }
       priorityQueue.push({ item, priority });
-      updateDisplay();
       document.getElementById('pqItem').value = '';
       document.getElementById('pqPriority').value = '';
+      updateDisplay();
     }
 
     function pop() {
@@ -61,7 +59,6 @@
         alert('Queue is empty.');
         return;
       }
-      // Remove item with lowest priority value (min-heap behavior)
       let minIndex = 0;
       for (let i = 1; i < priorityQueue.length; i++) {
         if (priorityQueue[i].priority < priorityQueue[minIndex].priority) {

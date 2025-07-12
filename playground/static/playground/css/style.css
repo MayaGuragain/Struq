@@ -66,18 +66,21 @@ h1 {
 /* ---------- TILE GRID ---------- */
 .tile-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* flexible equal columns */
   gap: 20px;
   width: 95%;
   max-width: 1100px;
   padding: 0 20px 60px;
 }
+
 .tile {
+  aspect-ratio: 1 / 1;  /* makes each tile a square */
+  width: 150px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  aspect-ratio: 1 / 1;
+
   border-radius: 20px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.1);
@@ -93,6 +96,7 @@ h1 {
   overflow: hidden;
   cursor: pointer;
 }
+
 .tile::before {
   content: '';
   position: absolute;

@@ -7,28 +7,26 @@
   <link rel="stylesheet" href="{% static 'playground/css/style.css' %}">
 </head>
 <body>
-  <div class="graph-container">
-    <h1>Welcome to the Graph Playground</h1>
-    <p>Basic graph with adjacency list representation.</p>
+  <div class="stack-container">
+    <h1>Graph Playground</h1>
+    <p class="subtitle">Basic graph using an adjacency list representation.</p>
 
-    <div class="graph-controls">
-      <div class="input-area">
-        <input type="text" id="vertexInput" placeholder="Enter vertex name" />
-        <button onclick="addVertex()">Add Vertex</button>
-      </div>
-
-      <div class="input-area" style="margin-top:10px;">
-        <input type="text" id="edgeFrom" placeholder="From vertex" />
-        <input type="text" id="edgeTo" placeholder="To vertex" />
-        <button onclick="addEdge()">Add Edge</button>
-      </div>
-
-      <div class="button-area" style="margin-top:10px;">
-        <button onclick="resetGraph()">Reset Graph</button>
-      </div>
+    <div class="stack-controls">
+      <input type="text" id="vertexInput" placeholder="Enter vertex name" />
+      <button onclick="addVertex()">Add Vertex</button>
     </div>
 
-    <pre id="graphDisplay" class="empty">Graph is empty.</pre>
+    <div class="stack-controls">
+      <input type="text" id="edgeFrom" placeholder="From vertex" />
+      <input type="text" id="edgeTo" placeholder="To vertex" />
+      <button onclick="addEdge()">Add Edge</button>
+    </div>
+
+    <div class="stack-controls">
+      <button onclick="resetGraph()">Reset Graph</button>
+    </div>
+
+    <pre id="graphDisplay" class="tree-display empty">Graph is empty.</pre>
   </div>
 
   <script>
@@ -52,45 +50,29 @@
 
     function addVertex() {
       const v = document.getElementById('vertexInput').value.trim();
-      if (!v) {
-        alert('Please enter a vertex name.');
-        return;
-      }
-      if (v in graph) {
-        alert(`Vertex "${v}" already exists.`);
-      } else {
-        graph[v] = [];
-        updateDisplay();
-      }
+      if (!v) return alert('Please enter a vertex name.');
+      if (v in graph) return alert(`Vertex "${v}" already exists.`);
+      graph[v] = [];
       document.getElementById('vertexInput').value = '';
+      updateDisplay();
     }
 
     function addEdge() {
       const from = document.getElementById('edgeFrom').value.trim();
       const to = document.getElementById('edgeTo').value.trim();
 
-      if (!from || !to) {
-        alert('Please enter both "From" and "To" vertex names.');
-        return;
-      }
-      if (!(from in graph)) {
-        alert(`Vertex "${from}" does not exist.`);
-        return;
-      }
-      if (!(to in graph)) {
-        alert(`Vertex "${to}" does not exist.`);
-        return;
-      }
-      if (!graph[from].includes(to)) {
-        graph[from].push(to);
-        // Uncomment below line for undirected graph:
-        // if (!graph[to].includes(from)) graph[to].push(from);
-        updateDisplay();
-      } else {
-        alert(`Edge from "${from}" to "${to}" already exists.`);
-      }
+      if (!from || !to) return alert('Please enter both "From" and "To" vertices.');
+      if (!(from in graph)) return alert(`Vertex "${from}" does not exist.`);
+      if (!(to in graph)) return alert(`Vertex "${to}" does not exist.`);
+      if (graph[from].includes(to)) return alert(`Edge from "${from}" to "${to}" already exists.`);
+
+      graph[from].push(to);
+      // Uncomment for undirected:
+      // if (!graph[to].includes(from)) graph[to].push(from);
+
       document.getElementById('edgeFrom').value = '';
       document.getElementById('edgeTo').value = '';
+      updateDisplay();
     }
 
     function resetGraph() {
